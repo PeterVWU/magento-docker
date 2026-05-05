@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$repo_root"
+
+auth_file="${MAGENTO_COMPOSER_AUTH_FILE:-}"
+
+if [[ -z "$auth_file" && -f "$repo_root/../composer-auth.json" ]]; then
+  auth_file="$repo_root/../composer-auth.json"
+elif [[ -z "$auth_file" && -f "$repo_root/auth.json" ]]; then
+  auth_file="$repo_root/auth.json"
+fi
+
+compose_args=(run --rm)
+
+if [[ -n "$auth_file" ]]; then
+  if [[ ! -f "$auth_file" ]]; then
+    printf 'Composer auth file does not exist: %s\n' "$auth_file" >&2
+    exit 66
+  fi
+
+  auth_file="$(realpath "$auth_file")"
+  compose_args+=(
+    -v "$auth_file:/tmp/composer-auth/auth.json:ro"
+    -e COMPOSER_HOME=/tmp/composer-auth
+  )
+fi
+
+docker compose "${compose_args[@]}" php composer "$@"

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$repo_root"
+
+command="${1:-clean}"
+shift || true
+
+case "$command" in
+  clean|flush|status|enable|disable)
+    docker compose run --rm php php bin/magento "cache:${command}" "$@"
+    ;;
+  *)
+    printf 'Usage: scripts/dev/cache [clean|flush|status|enable|disable] [args...]\n' >&2
+    exit 64
+    ;;
+esac
+

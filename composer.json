@@ -1,0 +1,50 @@
+{
+  "name": "vapewholesaleusa/magento-modern",
+  "description": "Clean Magento Open Source backend baseline for the VUSA modernization project.",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "magento/product-community-edition": ">=2.4.8-p4 <2.4.8-p5"
+  },
+  "autoload": {
+    "exclude-from-classmap": [
+      "**/dev/**",
+      "**/update/**",
+      "*/*/Test/**/*Test"
+    ],
+    "files": [
+      "app/etc/NonComposerComponentRegistration.php"
+    ],
+    "psr-4": {
+      "Magento\\Setup\\": "setup/src/Magento/Setup/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Magento\\PhpStan\\": "dev/tests/static/framework/Magento/PhpStan/",
+      "Magento\\Sniffs\\": "dev/tests/static/framework/Magento/Sniffs/",
+      "Magento\\TestFramework\\Inspection\\": "dev/tests/static/framework/Magento/TestFramework/Inspection/",
+      "Magento\\TestFramework\\Utility\\": "dev/tests/static/framework/Magento/TestFramework/Utility/",
+      "Magento\\Tools\\": "dev/tools/Magento/Tools/",
+      "Magento\\Tools\\Sanity\\": "dev/build/publication/sanity/Magento/Tools/Sanity/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "laminas/laminas-dependency-plugin": true,
+      "magento/*": true,
+      "php-http/discovery": true
+    },
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "repositories": {
+    "magento": {
+      "type": "composer",
+      "url": "https://repo.magento.com/"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

@@ -1,0 +1,39 @@
+# Keep Docker context clean and secret-free.
+.git
+.github
+.idea
+.vscode
+
+# Local secrets
+auth.json
+auth.json.bak
+.env
+.env.*
+app/etc/env.php
+app/etc/config_sandbox/
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Database dumps and raw exports
+*.sql
+*.sql.gz
+*.dump
+*.bak
+export/
+exports/
+VWU_production_database_dump_04032026.sql
+
+# Runtime/generated artifacts
+generated/
+var/
+pub/static/
+pub/media/
+vendor/
+node_modules/
+

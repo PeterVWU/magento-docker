@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$repo_root"
+
+scripts/dev/composer validate --strict
+scripts/security/scan-secrets.sh
+
+if [[ "$#" -eq 0 ]]; then
+  printf 'Static checks complete. Pass a PHPUnit target to run tests, for example: scripts/dev/test dev/tests/unit/phpunit.xml.dist\n'
+elif [[ -x vendor/bin/phpunit ]]; then
+  docker compose run --rm php vendor/bin/phpunit "$@"
+else
+  printf 'No vendor/bin/phpunit yet; install Magento dependencies before running PHPUnit.\n'
+fi

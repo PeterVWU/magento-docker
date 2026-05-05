@@ -1,0 +1,44 @@
+# Local secrets
+/auth.json
+/auth.json.bak
+/.env
+/.env.*
+!/.env.example
+/app/etc/env.php
+/app/etc/config_sandbox/
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Database dumps and exports
+*.sql
+*.sql.gz
+*.dump
+*.bak
+/export/
+/exports/
+
+# Magento generated/runtime files
+/generated/
+/var/
+/pub/static/
+/pub/media/
+!/pub/media/.htaccess
+/vendor/
+
+# Node/build artifacts
+/node_modules/
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+
+# Local IDE/system files
+/.idea/
+/.vscode/
+.DS_Store
+
