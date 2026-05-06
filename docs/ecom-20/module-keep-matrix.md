@@ -73,6 +73,7 @@ Each final decision row should include:
 
 | Column | Required Evidence |
 | --- | --- |
+| `owner_decision` | Owner-marked decision in `legacy-local-modules.csv`; current values are `Keep` or `Remove`. |
 | Decision | Keep, Replace, Rewrite, Remove, or Defer. |
 | Business owner | Named owner or decision group. |
 | Source of truth | Owner inventory, production config, DB evidence, code scan, Composer requirement, or ticket reference. |
