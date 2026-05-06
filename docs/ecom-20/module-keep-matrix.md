@@ -14,6 +14,7 @@ This is the first-pass ECOM-20 audit scaffold for the fresh `magento-modern` rep
 | [setup-module.csv](setup-module.csv) | Sanitized production `setup_module` versions for installed module history. | `sanitized production DB` |
 | [table-presence.csv](table-presence.csv) | Sanitized table-presence evidence for known remove-risk integration table patterns. | `sanitized production DB table check` |
 | [config-paths.csv](config-paths.csv) | Sanitized `core_config_data` scope/path evidence without values. | `sanitized production DB config path check` |
+| [decision-summary.md](decision-summary.md) | Final owner decision counts for local modules and Composer packages. | `owner_decision` columns |
 
 ## Current Evidence Gaps
 
@@ -86,5 +87,5 @@ Supporting columns are retained for traceability:
 ## Immediate Blockers
 
 - Local module keep/remove decisions are recorded.
-- Composer package keep/remove decisions still need to be marked in `legacy-composer-requirements.csv`.
+- Composer package keep/remove decisions are recorded.
 - ECOM-59 must still handle private repository credentials for any kept private Composer packages.
