@@ -1,0 +1,3 @@
+none
+pattern,tables_found,source,notes
+"ECOM-20 known remove table patterns",none,"sanitized production DB table check","No matching tables were reported in the provided evidence file."

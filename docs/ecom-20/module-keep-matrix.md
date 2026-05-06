@@ -10,11 +10,15 @@ This is the first-pass ECOM-20 audit scaffold for the fresh `magento-modern` rep
 | --- | --- | --- |
 | [legacy-local-modules.csv](legacy-local-modules.csv) | Generated inventory of `vusa244/app/code` local modules with first-pass decisions. | `legacy repo scan`, `ECOM-20 ticket`, `ECOM-55 ticket`, `needs production config/DB confirmation` |
 | [legacy-composer-requirements.csv](legacy-composer-requirements.csv) | Generated inventory of legacy `composer.json` requirements with sanitized credential-risk notes. | `legacy composer.json`, `ECOM-20 ticket`, `needs production config/DB confirmation` |
+| [production-modules.csv](production-modules.csv) | Sanitized production module enablement exported from production `app/etc/config.php`. | `production app/etc/config.php` |
+| [setup-module.csv](setup-module.csv) | Sanitized production `setup_module` versions for installed module history. | `sanitized production DB` |
+| [table-presence.csv](table-presence.csv) | Sanitized table-presence evidence for known remove-risk integration table patterns. | `sanitized production DB table check` |
+| [config-paths.csv](config-paths.csv) | Sanitized `core_config_data` scope/path evidence without values. | `sanitized production DB config path check` |
 
 ## Current Evidence Gaps
 
-- The legacy `vusa244` repo does not contain a committed `app/etc/config.php`, so enabled legacy module state is unresolved.
-- Enabled module evidence must come from production `app/etc/config.php` or sanitized database evidence such as `setup_module` and relevant configuration tables.
+- The legacy `vusa244` repo does not contain a committed `app/etc/config.php`; production module enablement is now captured in `production-modules.csv`.
+- Production DB evidence is now captured in `setup-module.csv`, `table-presence.csv`, and `config-paths.csv`, but final decisions still need row-level reconciliation back to each local module and Composer package.
 - Owner-confirmed business inventory was not present in `.omc/autopilot/full-inventory.md` in the recloned legacy tree.
 - Private Composer credentials are present in legacy `composer.json` repository URLs for Mirasvit and Firebear. The CSV records only sanitized risk notes. Clean-room secret handling belongs to ECOM-59 before any approved dependency set is installed.
 
@@ -83,7 +87,6 @@ Each final decision row should include:
 
 ## Immediate Blockers
 
-- Production module enablement evidence is missing.
-- Sanitized DB evidence for module tables/config usage is missing.
+- Production evidence must be reconciled into the first-pass module and Composer inventories.
 - Owner-confirmed keep/remove inventory is missing.
 - ECOM-59 must resolve clean repository auth and credential rotation before private Composer packages can be evaluated in the clean baseline.
