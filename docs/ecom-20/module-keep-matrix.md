@@ -18,20 +18,19 @@ This is the first-pass ECOM-20 audit scaffold for the fresh `magento-modern` rep
 ## Current Evidence Gaps
 
 - The legacy `vusa244` repo does not contain a committed `app/etc/config.php`; production module enablement is now captured in `production-modules.csv`.
-- Production DB evidence is now captured in `setup-module.csv`, `table-presence.csv`, and `config-paths.csv`, but final decisions still need row-level reconciliation back to each local module and Composer package.
-- Owner-confirmed business inventory was not present in `.omc/autopilot/full-inventory.md` in the recloned legacy tree.
+- Production DB evidence is now captured in `setup-module.csv`, `table-presence.csv`, and `config-paths.csv`.
 - Private Composer credentials are present in legacy `composer.json` repository URLs for Mirasvit and Firebear. The CSV records only sanitized risk notes. Clean-room secret handling belongs to ECOM-59 before any approved dependency set is installed.
 
-## Decision States
+## Owner Decision Rule
 
-| State | Meaning |
+The practical ECOM-20 decision is captured in `legacy-local-modules.csv` as `owner_decision`:
+
+| Owner Decision | Meaning |
 | --- | --- |
-| Keep | Approved to retain as-is after owner, license, source, API, and test review. |
-| Replace | Business capability remains, but the implementation should move to a different package or platform service. |
-| Rewrite | Business capability remains, but the legacy module should not be carried forward directly. |
-| Rewrite Candidate | First-pass high-risk marker, especially for core/vendor overrides named by ECOM-55. |
-| Remove | First-pass removal candidate from dead integrations, theme-only modules, or headless-incompatible storefront behavior. |
-| Defer | Inventory exists, but owner/source/config/API evidence is insufficient for a final decision. |
+| Keep | Include this module in the new Magento build as-is for now. |
+| Remove | Do not include this module in the new Magento build. |
+
+The generated `initial_decision` column remains as historical scan context only. It does not override `owner_decision`.
 
 ## First-Pass Defaults
 
@@ -43,9 +42,9 @@ This is the first-pass ECOM-20 audit scaffold for the fresh `magento-modern` rep
 | Payment, order, inventory, customer, shipping, tax, catalog, PDF, admin utility modules | Defer or Rewrite Candidate | ECOM-20 ticket; legacy repo scan | Keep-category candidates need owner, source, enabled-state, DB, cron, observer/plugin/preference, headless/API, license, and test review. |
 | ECOM-55 high-risk overrides | Rewrite Candidate | ECOM-55 ticket; legacy repo scan | Includes payment, stock deduction, exports, split DB, core sales/catalog/configurable overrides, PDF/email/admin utilities, and Rootways AuthorizeCIM overrides named by ECOM-55. |
 
-## Known Keep-Category Workstreams
+## Known Keep-Category Context
 
-These remain `Defer` or `Rewrite Candidate` until reviewed:
+These groups explain why many modules were marked for owner review before `owner_decision` was added:
 
 | Workstream | Examples | Required Follow-Up |
 | --- | --- | --- |
@@ -58,7 +57,7 @@ These remain `Defer` or `Rewrite Candidate` until reviewed:
 | Catalog/promotions | MageWorx APO, BSS Configurable Grid View, Firebear Import/Export, Nicotine Warning, Hide Price, Grouped Options, Search, promotions, ShopBy/Brand | Confirm backend vs storefront responsibility, API coverage, licensing, and data migration impact. |
 | PDF/admin/infrastructure | Custom Invoice PDF, credit memo email, reply-to email, payment failures email, admin actions log, table/image cleanup, image optimizer, session optimization, split DB | Confirm admin-only business need, Cloud SQL compatibility, supportability, and tests. |
 
-## Known Remove Workstreams
+## Known Remove Context
 
 | Workstream | Removal Basis | Follow-Up |
 | --- | --- | --- |
@@ -67,27 +66,24 @@ These remain `Defer` or `Rewrite Candidate` until reviewed:
 | Dealer/distributor permission modules | ECOM-20 known remove list. | Confirm related DB tables/config are no longer used. |
 | Legacy frontend performance/theme tooling | Headless storefront should own frontend optimization. | Replace only if backend behavior remains necessary. |
 
-## Matrix Columns To Complete
+## Matrix Columns
 
-Each final decision row should include:
+The main decision column is:
 
 | Column | Required Evidence |
 | --- | --- |
 | `owner_decision` | Owner-marked decision in `legacy-local-modules.csv`; current values are `Keep` or `Remove`. |
-| Decision | Keep, Replace, Rewrite, Remove, or Defer. |
-| Business owner | Named owner or decision group. |
-| Source of truth | Owner inventory, production config, DB evidence, code scan, Composer requirement, or ticket reference. |
-| Feature dependency | Business process, integration, admin workflow, or storefront/headless requirement. |
-| DB tables | Tables created/read/written and migration impact. |
-| Cron/jobs | Cron groups, queues, scheduled jobs, external calls. |
-| Observers/plugins/preferences | Especially core/vendor replacements and ObjectManager fallback. |
-| Frontend/headless impact | Whether the behavior moves to frontend, API, admin-only, or disappears. |
-| GraphQL/REST coverage | Existing or required API contract. |
-| License/support status | Vendor access, supportability, replacement package risk. |
-| Test coverage | Existing tests and required unit/integration/API coverage. |
+
+Supporting columns are retained for traceability:
+
+| Column | Purpose |
+| --- | --- |
+| `initial_decision` | Generated first-pass scan context. |
+| `source` | Evidence source used during the generated scan. |
+| `notes` | Generated scan notes. |
+| `confirmation_needed` | Historical checklist from the first-pass audit. |
 
 ## Immediate Blockers
 
-- Production evidence must be reconciled into the first-pass module and Composer inventories.
-- Owner-confirmed keep/remove inventory is missing.
-- ECOM-59 must resolve clean repository auth and credential rotation before private Composer packages can be evaluated in the clean baseline.
+- Local module keep/remove decisions are recorded.
+- Composer package inclusion still needs to follow the kept local modules and ECOM-59 credential handling for private repositories.
