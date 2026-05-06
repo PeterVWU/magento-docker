@@ -23,12 +23,12 @@ This is the first-pass ECOM-20 audit scaffold for the fresh `magento-modern` rep
 
 ## Owner Decision Rule
 
-The practical ECOM-20 decision is captured in `legacy-local-modules.csv` as `owner_decision`:
+The practical ECOM-20 decision is captured as `owner_decision` in both inventories:
 
 | Owner Decision | Meaning |
 | --- | --- |
-| Keep | Include this module in the new Magento build as-is for now. |
-| Remove | Do not include this module in the new Magento build. |
+| Keep | Include this local module or Composer package in the new Magento build as-is for now. |
+| Remove | Do not include this local module or Composer package in the new Magento build. |
 
 The generated `initial_decision` column remains as historical scan context only. It does not override `owner_decision`.
 
@@ -72,7 +72,7 @@ The main decision column is:
 
 | Column | Required Evidence |
 | --- | --- |
-| `owner_decision` | Owner-marked decision in `legacy-local-modules.csv`; current values are `Keep` or `Remove`. |
+| `owner_decision` | Owner-marked decision in `legacy-local-modules.csv` and `legacy-composer-requirements.csv`; expected values are `Keep` or `Remove`. |
 
 Supporting columns are retained for traceability:
 
@@ -86,4 +86,5 @@ Supporting columns are retained for traceability:
 ## Immediate Blockers
 
 - Local module keep/remove decisions are recorded.
-- Composer package inclusion still needs to follow the kept local modules and ECOM-59 credential handling for private repositories.
+- Composer package keep/remove decisions still need to be marked in `legacy-composer-requirements.csv`.
+- ECOM-59 must still handle private repository credentials for any kept private Composer packages.
