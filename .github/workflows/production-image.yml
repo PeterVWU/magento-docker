@@ -1,0 +1,85 @@
+name: Production Image
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  IMAGE_NAME: magento-modern
+  GAR_HOSTNAME: ${{ secrets.GAR_HOSTNAME }}
+  GAR_PROJECT: ${{ secrets.GAR_PROJECT }}
+  GAR_REPOSITORY: ${{ secrets.GAR_REPOSITORY }}
+  GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Secret scan
+        run: bash scripts/security/scan-secrets.sh
+
+      - name: Docker context guardrails
+        run: bash scripts/ci/check-docker-context.sh
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and smoke-test image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          build-args: |
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+            IMAGE_SOURCE=${{ github.repository }}
+          secrets: |
+            composer_auth=${{ secrets.COMPOSER_AUTH_JSON }}
+
+      - name: Smoke-test bin/magento in web role
+        run: docker run --rm --entrypoint php ${{ env.IMAGE_NAME }}:${{ github.sha }} bin/magento list
+
+      - name: Smoke-test worker role command path
+        run: docker run --rm ${{ env.IMAGE_NAME }}:${{ github.sha }} worker php bin/magento list
+
+      - name: Smoke-test release role command path
+        run: docker run --rm ${{ env.IMAGE_NAME }}:${{ github.sha }} release php bin/magento list
+
+      - name: Assert runtime startup does not mutate database
+        run: |
+          history="$(docker history --no-trunc ${{ env.IMAGE_NAME }}:${{ github.sha }})"
+          printf '%s\n' "$history" | grep -q 'setup:upgrade' && exit 1 || true
+          printf '%s\n' "$history" | grep -q 'cache:flush' && exit 1 || true
+
+      - name: Configure Google auth
+        if: github.ref == 'refs/heads/main' && env.GCP_WORKLOAD_IDENTITY_PROVIDER != '' && env.GCP_SERVICE_ACCOUNT != ''
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+
+      - name: Configure Docker for Artifact Registry
+        if: github.ref == 'refs/heads/main' && env.GAR_HOSTNAME != ''
+        run: gcloud auth configure-docker "${GAR_HOSTNAME}" --quiet
+
+      - name: Push SHA-tagged image
+        if: github.ref == 'refs/heads/main' && env.GAR_HOSTNAME != '' && env.GAR_PROJECT != '' && env.GAR_REPOSITORY != ''
+        run: |
+          target="${GAR_HOSTNAME}/${GAR_PROJECT}/${GAR_REPOSITORY}/${IMAGE_NAME}:${{ github.sha }}"
+          docker tag "${{ env.IMAGE_NAME }}:${{ github.sha }}" "$target"
+          docker push "$target"
