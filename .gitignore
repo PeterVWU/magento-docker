@@ -6,6 +6,7 @@
 !/.env.example
 /app/etc/env.php
 /app/etc/config_sandbox/
+/gcp--bucket-testing-credential.txt
 
 # Private keys and certificates
 *.key

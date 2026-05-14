@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$repo_root"
+
+credential_file="${ECOM60_GCS_CREDENTIAL_FILE:-$repo_root/../gcp--bucket-testing-credential.txt}"
+
+if [[ ! -r "$credential_file" ]]; then
+  printf 'Missing readable GCS HMAC credential file: %s\n' "$credential_file" >&2
+  exit 66
+fi
+
+docker compose run --rm \
+  -e ECOM60_GCS_BUCKET="${ECOM60_GCS_BUCKET:-vwu-magento-media}" \
+  -e ECOM60_GCS_PREFIX="${ECOM60_GCS_PREFIX:-ecom60}" \
+  -e ECOM60_GCS_REGION="${ECOM60_GCS_REGION:-auto}" \
+  -e ECOM60_GCS_ENDPOINT="${ECOM60_GCS_ENDPOINT:-https://storage.googleapis.com}" \
+  -v "$credential_file:/tmp/ecom60-gcs-credential.txt:ro" \
+  php php scripts/ecom60/gcs-s3-compat-smoke.php /tmp/ecom60-gcs-credential.txt

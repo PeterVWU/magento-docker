@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\RemoteStorage\Driver\DriverFactoryPool">
+        <arguments>
+            <argument name="pool" xsi:type="array">
+                <item name="gcs-s3" xsi:type="object">Vapewholesaleusa\GcsRemoteStorage\Driver\GcsS3Factory</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Cms\Model\Wysiwyg\Images\Storage">
+        <plugin name="vwu_gcs_remote_storage_normalize_thumbnail_path"
+                type="Vapewholesaleusa\GcsRemoteStorage\Plugin\Cms\Wysiwyg\Images\StoragePlugin"/>
+    </type>
+</config>
