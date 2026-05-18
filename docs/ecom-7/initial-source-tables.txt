@@ -1,0 +1,16 @@
+# Tables needed for the first production-derived ECOM-7 source slice.
+#
+# Stage 1: choose recent representative orders and customers
+sales_order
+customer_entity
+
+# Required retained business-data tables confirmed from legacy module code
+salesrep
+vapewholesaleusa_ordersource_ordersource
+
+# Stage 2: extract only after the representative order/customer IDs are chosen
+sales_order_item
+sales_order_address
+customer_address_entity
+catalog_product_entity
+catalog_product_super_link

@@ -1,0 +1,40 @@
+# Additional source tables needed before the first meaningful Magento import.
+#
+# Product and customer EAV values
+catalog_product_entity_datetime
+catalog_product_entity_decimal
+catalog_product_entity_int
+catalog_product_entity_text
+catalog_product_entity_varchar
+customer_entity_datetime
+customer_entity_decimal
+customer_entity_int
+customer_entity_text
+customer_entity_varchar
+customer_address_entity_datetime
+customer_address_entity_decimal
+customer_address_entity_int
+customer_address_entity_text
+customer_address_entity_varchar
+
+# Catalog relationships and media
+catalog_category_product
+catalog_product_relation
+catalog_product_super_attribute
+catalog_product_super_attribute_label
+catalog_product_website
+catalog_product_entity_media_gallery
+catalog_product_entity_media_gallery_value
+catalog_product_entity_media_gallery_value_to_entity
+
+# Order children needed for admin validation
+sales_order_payment
+sales_order_status_history
+sales_invoice
+sales_invoice_item
+sales_shipment
+sales_shipment_item
+
+# Inventory data needed for catalog validation
+cataloginventory_stock_item
+inventory_source_item

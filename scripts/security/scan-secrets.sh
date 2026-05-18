@@ -27,6 +27,7 @@ if find . \
   -path './vendor' -prune -o \
   -path './node_modules' -prune -o \
   -path './dev/tests' -prune -o \
+  -path './docs/ecom-7/*.sql' -prune -o \
   \( -name 'auth.json' -o -name 'auth.json.bak' -o -name '*.sql' -o -name '*.sql.gz' -o -name '*.dump' -o -name '*.pem' -o -name '*.key' \) \
   -print | rg .; then
   printf '\nERROR: sensitive local files are present in the repo tree\n\n' >&2

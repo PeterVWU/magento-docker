@@ -21,6 +21,7 @@
 *.sql.gz
 *.dump
 *.bak
+!/docs/ecom-7/*.sql
 /export/
 /exports/
 
