@@ -44,3 +44,18 @@
 /.vscode/
 .DS_Store
 .~lock.*#
+
+# Terraform local state and plans
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+backend.*.hcl
+!backend.gcs.example.hcl
+*.tfplan
+crash.log
+crash.*.log
+
+# Local repo tools
+/.tools/

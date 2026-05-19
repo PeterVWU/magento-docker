@@ -37,11 +37,11 @@ not run this work opportunistically at startup.
 
 ## Stateful Services
 
-Stateful services are managed outside the web and worker containers:
+Stateful services live outside the web and worker containers:
 
 - Cloud SQL for MySQL.
 - Memorystore Redis for Magento cache, page cache, sessions, and locks.
-- Managed OpenSearch for catalog search.
+- OpenSearch for catalog search.
 - GCS for media storage.
 - Secret Manager for runtime secrets.
 
@@ -54,15 +54,16 @@ session or lock state.
 
 ## Search
 
-Use managed OpenSearch, not Elasticsearch.
+Use OpenSearch, not Elasticsearch.
 
-For Magento Open Source 2.4.8-p4, target the OpenSearch version listed in the
-official Magento system requirements for that patch level. Elasticsearch is not
-the default because Magento 2.4.8 marks Elasticsearch options as deprecated.
+For Magento Open Source 2.4.8-p4, target OpenSearch `3`, which is the version
+listed in the official Magento system requirements for that patch level.
+Elasticsearch is not the default because Magento 2.4.8 marks Elasticsearch
+options as deprecated.
 
-Search should use private network access where the provider supports it. Initial
-sizing should be conservative and resized from catalog size, reindex duration,
-query latency, CPU, memory, and disk metrics.
+Search runs as a dedicated private service outside the stateless web MIGs.
+Initial sizing should be conservative and resized from catalog size, reindex
+duration, query latency, CPU, memory, and disk metrics.
 
 ## Media
 
@@ -219,7 +220,7 @@ backend API behavior.
 
 ## Validation Items
 
-- OpenSearch provider and exact version: confirm compatibility with Magento Open
+- OpenSearch topology and exact version: confirm compatibility with Magento Open
   Source 2.4.8-p4 and expected catalog/search volume.
 - GCS media module selection: confirm module/package, support status, and test
   plan for admin/import/media delivery behavior.

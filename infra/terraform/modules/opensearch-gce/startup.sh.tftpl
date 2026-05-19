@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CLUSTER_NAME='${cluster_name}'
+NODE_COUNT='${node_count}'
+NODE_NAMES_JSON='${node_names_json}'
+OPENSEARCH_VERSION='${opensearch_version}'
+HEAP_SIZE='${heap_size}'
+PROJECT_ID='${project_id}'
+ADMIN_PASSWORD_SECRET_ID='${admin_password_secret_id}'
+SNAPSHOT_BUCKET='${snapshot_bucket_name}'
+SNAPSHOT_BASE_PATH='${snapshot_base_path}'
+DATA_DEVICE='/dev/disk/by-id/google-opensearch-data'
+DATA_DIR='/var/lib/opensearch'
+MARKER_START='### ECOM-6 managed OpenSearch settings start ###'
+MARKER_END='### ECOM-6 managed OpenSearch settings end ###'
+
+log() {
+  echo "[ecom6-opensearch] $*" >&2
+  logger -t ecom6-opensearch "$*" || true
+}
+
+metadata_token() {
+  curl -fsS -H 'Metadata-Flavor: Google' \
+    'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token' \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])'
+}
+
+secret_payload() {
+  local secret_id="$1"
+  local token
+  token="$(metadata_token)"
+  curl -fsS \
+    -H "Authorization: Bearer $${token}" \
+    "https://secretmanager.googleapis.com/v1/projects/$${PROJECT_ID}/secrets/$${secret_id}/versions/latest:access" \
+    | python3 -c 'import base64,json,sys; print(base64.b64decode(json.load(sys.stdin)["payload"]["data"]).decode())'
+}
+
+admin_password() {
+  if [[ -n "$${ADMIN_PASSWORD_SECRET_ID}" ]]; then
+    if secret_payload "$${ADMIN_PASSWORD_SECRET_ID}"; then
+      return 0
+    fi
+    log "could not read Secret Manager secret $${ADMIN_PASSWORD_SECRET_ID}; generating local first-boot admin password"
+  fi
+  openssl rand -base64 36
+}
+
+install_prerequisites() {
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl gnupg2 lsb-release python3 jq openssl
+}
+
+configure_kernel() {
+  cat >/etc/sysctl.d/99-opensearch.conf <<'EOF_SYSCTL'
+vm.max_map_count=262144
+EOF_SYSCTL
+  sysctl --system >/dev/null
+}
+
+configure_apt_repo() {
+  install -d -m 0755 /etc/apt/keyrings
+  if [[ ! -s /etc/apt/keyrings/opensearch.gpg ]]; then
+    curl -fsSL https://artifacts.opensearch.org/publickeys/opensearch-release.pgp \
+      | gpg --dearmor -o /etc/apt/keyrings/opensearch.gpg
+  fi
+  echo 'deb [signed-by=/etc/apt/keyrings/opensearch.gpg] https://artifacts.opensearch.org/releases/bundle/opensearch/3.x/apt stable main' \
+    >/etc/apt/sources.list.d/opensearch-3.x.list
+  apt-get update
+}
+
+install_opensearch() {
+  if dpkg-query -W -f='$${Status}' opensearch 2>/dev/null | grep -q 'install ok installed'; then
+    log "OpenSearch already installed"
+    return
+  fi
+
+  local password
+  password="$(admin_password)"
+  install -d -m 0700 /root/opensearch
+  printf '%s' "$${password}" >/root/opensearch/initial-admin-password
+  chmod 0600 /root/opensearch/initial-admin-password
+
+  DEBIAN_FRONTEND=noninteractive OPENSEARCH_INITIAL_ADMIN_PASSWORD="$${password}" \
+    apt-get install -y "opensearch=$${OPENSEARCH_VERSION}"
+}
+
+install_plugins() {
+  if ! /usr/share/opensearch/bin/opensearch-plugin list | grep -qx 'repository-gcs'; then
+    /usr/share/opensearch/bin/opensearch-plugin install --batch repository-gcs
+  fi
+}
+
+mount_data_disk() {
+  systemctl stop opensearch || true
+
+  for _ in $(seq 1 30); do
+    [[ -e "$${DATA_DEVICE}" ]] && break
+    sleep 2
+  done
+  if [[ ! -e "$${DATA_DEVICE}" ]]; then
+    log "data device $${DATA_DEVICE} not found"
+    exit 1
+  fi
+
+  if ! blkid "$${DATA_DEVICE}" >/dev/null 2>&1; then
+    mkfs.ext4 -F "$${DATA_DEVICE}"
+  fi
+
+  mkdir -p "$${DATA_DIR}"
+  if ! grep -q "$${DATA_DEVICE} $${DATA_DIR} " /etc/fstab; then
+    echo "$${DATA_DEVICE} $${DATA_DIR} ext4 defaults,nofail 0 2" >>/etc/fstab
+  fi
+  mount "$${DATA_DIR}" || true
+  chown -R opensearch:opensearch "$${DATA_DIR}"
+}
+
+write_jvm_options() {
+  install -d -m 0755 /etc/opensearch/jvm.options.d
+  cat >/etc/opensearch/jvm.options.d/ecom6-heap.options <<EOF_HEAP
+-Xms$${HEAP_SIZE}
+-Xmx$${HEAP_SIZE}
+EOF_HEAP
+  chown root:opensearch /etc/opensearch/jvm.options.d/ecom6-heap.options
+  chmod 0640 /etc/opensearch/jvm.options.d/ecom6-heap.options
+}
+
+write_opensearch_config() {
+  local host_short
+  host_short="$(hostname -s)"
+
+  local seed_hosts
+  seed_hosts="$(NODE_NAMES_JSON="$${NODE_NAMES_JSON}" python3 - <<'PY_SEEDS'
+import json, os
+print(', '.join('"%s:9300"' % n for n in json.loads(os.environ['NODE_NAMES_JSON'])))
+PY_SEEDS
+)"
+
+  local manager_nodes
+  manager_nodes="$(NODE_NAMES_JSON="$${NODE_NAMES_JSON}" python3 - <<'PY_MANAGERS'
+import json, os
+print(', '.join('"%s"' % n for n in json.loads(os.environ['NODE_NAMES_JSON'])))
+PY_MANAGERS
+)"
+
+  local discovery_block
+  if [[ "$${NODE_COUNT}" == "1" ]]; then
+    discovery_block='discovery.type: single-node'
+  else
+    discovery_block="discovery.seed_hosts: [$${seed_hosts}]
+cluster.initial_cluster_manager_nodes: [$${manager_nodes}]"
+  fi
+
+  local existing='/etc/opensearch/opensearch.yml'
+  local stripped='/tmp/opensearch.yml.stripped'
+  if [[ -f "$${existing}" ]]; then
+    awk '
+      /'"$${MARKER_START}"'/ { skip=1; next }
+      /'"$${MARKER_END}"'/ { skip=0; next }
+      skip { next }
+      /^[[:space:]]*(cluster\.name|node\.name|network\.host|http\.port|transport\.port|path\.data|discovery\.type|discovery\.seed_hosts|cluster\.initial_cluster_manager_nodes):/ { next }
+      { print }
+    ' "$${existing}" >"$${stripped}"
+    cp "$${stripped}" "$${existing}"
+  else
+    touch "$${existing}"
+  fi
+
+  cat >>"$${existing}" <<EOF_YML
+
+$${MARKER_START}
+cluster.name: $${CLUSTER_NAME}
+node.name: $${host_short}
+network.host: 0.0.0.0
+http.port: 9200
+transport.port: 9300
+path.data: $${DATA_DIR}
+$${discovery_block}
+$${MARKER_END}
+EOF_YML
+  chown root:opensearch "$${existing}"
+  chmod 0660 "$${existing}"
+}
+
+write_snapshot_registration_helper() {
+  cat >/usr/local/sbin/register-opensearch-gcs-snapshot.sh <<'EOF_REGISTER'
+#!/usr/bin/env bash
+set -euo pipefail
+
+ADMIN_PASSWORD_FILE='/root/opensearch/initial-admin-password'
+if [[ ! -s "$ADMIN_PASSWORD_FILE" ]]; then
+  echo "Missing $ADMIN_PASSWORD_FILE" >&2
+  exit 1
+fi
+
+curl --fail --silent --show-error --insecure \
+  -u "admin:$(cat "$ADMIN_PASSWORD_FILE")" \
+  -X PUT 'https://localhost:9200/_snapshot/gcs-magento' \
+  -H 'Content-Type: application/json' \
+  -d @- <<JSON
+{
+  "type": "gcs",
+  "settings": {
+    "bucket": "__SNAPSHOT_BUCKET__",
+    "base_path": "__SNAPSHOT_BASE_PATH__"
+  }
+}
+JSON
+EOF_REGISTER
+  sed -i "s#__SNAPSHOT_BUCKET__#$${SNAPSHOT_BUCKET}#g; s#__SNAPSHOT_BASE_PATH__#$${SNAPSHOT_BASE_PATH}#g" \
+    /usr/local/sbin/register-opensearch-gcs-snapshot.sh
+  chmod 0750 /usr/local/sbin/register-opensearch-gcs-snapshot.sh
+}
+
+start_service() {
+  systemctl daemon-reload
+  systemctl enable opensearch
+  systemctl restart opensearch
+}
+
+main() {
+  log "starting OpenSearch bootstrap for $${CLUSTER_NAME}"
+  install_prerequisites
+  configure_kernel
+  configure_apt_repo
+  install_opensearch
+  install_plugins
+  mount_data_disk
+  write_jvm_options
+  write_opensearch_config
+  write_snapshot_registration_helper
+  start_service
+  log "OpenSearch bootstrap complete for $${CLUSTER_NAME}"
+}
+
+main "$@"

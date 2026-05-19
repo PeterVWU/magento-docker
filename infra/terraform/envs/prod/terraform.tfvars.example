@@ -1,0 +1,34 @@
+project_id = "YOUR-PROD-PROJECT-ID"
+impersonate_service_account = "magento-infra-deployer@YOUR-PROD-PROJECT-ID.iam.gserviceaccount.com"
+region            = "us-west1"
+zone              = "us-west1-a"
+network_self_link = "projects/YOUR-PROD-PROJECT-ID/global/networks/YOUR-VPC"
+network_name      = "YOUR-VPC"
+subnetwork_self_link = "projects/YOUR-PROD-PROJECT-ID/regions/us-west1/subnetworks/YOUR-SUBNET"
+
+labels = {
+  owner = "ecom-engineering"
+}
+
+cloud_sql_tier             = "db-custom-2-8192"
+cloud_sql_disk_size_gb     = 200
+cloud_sql_app_password     = "REPLACE_WITH_LOCAL_OR_CI_SECRET"
+cloud_sql_release_password = "REPLACE_WITH_LOCAL_OR_CI_SECRET"
+
+redis_memory_size_gb            = 5
+redis_transit_encryption_mode   = "DISABLED"
+
+opensearch_node_count             = 3
+opensearch_machine_type           = "e2-standard-4"
+opensearch_version                 = "3.6.0"
+opensearch_heap_size               = "2g"
+opensearch_data_disk_size_gb      = 200
+
+# Later web MIG tags/ranges should be passed here so only web/worker/release
+# runtimes can reach OpenSearch HTTP.
+web_mig_source_ranges = []
+web_mig_source_tags   = ["magento-prod-web", "magento-prod-worker", "magento-prod-release"]
+
+runtime_secret_accessor_members = []
+release_secret_accessor_members = []
+build_secret_accessor_members   = []
