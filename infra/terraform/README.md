@@ -1,11 +1,13 @@
-# ECOM-6 OpenTofu Foundation
+# Magento OpenTofu Foundation
 
 This directory contains the first OpenTofu infrastructure-as-code boundary for
-Phase 5. The configuration is Terraform-compatible HCL, but OpenTofu is the
+the Magento infrastructure modernization. The configuration is
+Terraform-compatible HCL, but OpenTofu is the
 project CLI for formatting, initialization, and validation. It follows the
 service contract in:
 
 - `../../docs/ecom-6/managed-stateful-services.md`
+- `../../docs/ecom-8/compute-runtime.md`
 - `../../docs/architecture/runtime-contract.md`
 
 ## Layout
@@ -22,6 +24,7 @@ modules/
   gcs-buckets/
   secret-manager/
   opensearch-gce/
+  compute-runtime/
 ```
 
 The environment roots compose reusable modules and keep environment-specific
@@ -29,9 +32,8 @@ sizing, project, region, and network inputs out of the modules.
 
 ## Current Scope
 
-This is the Phase 5 stateful-services foundation. It intentionally does not
-create the future web MIG or load balancer. Those later resources will consume
-these outputs and private-network contracts.
+This root now covers the Phase 5 stateful-services foundation and Phase 6
+compute runtime boundary.
 
 Included in this slice:
 
@@ -41,7 +43,35 @@ Included in this slice:
 - Memorystore Redis instance;
 - GCS media/assets buckets;
 - Secret Manager secret containers and IAM hooks;
-- self-managed OpenSearch-on-GCE scaffolding.
+- self-managed OpenSearch-on-GCE scaffolding;
+- SHA-tagged Magento web, worker, and release instance templates;
+- a stateless web regional MIG with lightweight `/healthz` checks;
+- a small worker MIG for cron and queue consumers.
+
+The external HTTPS load balancer, managed certificate, DNS, Cloud Armor, and
+CDN/edge integration remain a later deployment boundary. The web MIG exposes a
+named `http` port and health check for that later frontend.
+
+## Compute Runtime
+
+The `compute-runtime` module creates immutable instance templates around the
+production container image from ECOM-19.
+
+- `web` runs nginx/PHP-FPM only behind a regional MIG.
+- `worker` runs cron and the configured queue consumers in a one-instance MIG by
+  default.
+- `release` has an instance template only. Operators or CI create a one-off VM
+  from that template when deploy-time mutation is required.
+
+Runtime startup installs Docker on a private Debian VM, pulls the SHA-tagged
+runtime image, writes non-secret service wiring into `/etc/magento/runtime.env`,
+fetches secret payloads from Secret Manager with the VM service account, and
+starts the selected container role. The web health check uses `/healthz` on port
+`8080`, matching the runtime image contract.
+
+The templates emit environment, role, image SHA, and phase metadata for
+observability and rollback. Rollback is a template/image rollback in the MIG,
+with database rollback handled according to the runtime architecture contract.
 
 ## OpenSearch Bootstrap
 
@@ -106,8 +136,8 @@ Secret versions should be injected through a controlled operator or CI process.
 
 ## Applied Staging State
 
-ECOM-6 applied the staging root to GCP project `vwu-infra` and the final
-OpenTofu drift check reported no changes.
+ECOM-6 and ECOM-8 applied the staging root to GCP project `vwu-infra`. The final
+OpenTofu drift check after the compute-runtime rollout reported no changes.
 
 Key staging outputs:
 
@@ -121,7 +151,13 @@ Key staging outputs:
 - Runtime service account: `magento-stg-runtime@vwu-infra.iam.gserviceaccount.com`
 - Release service account: `magento-stg-release@vwu-infra.iam.gserviceaccount.com`
 - OpenSearch service account: `magento-stg-opensearch@vwu-infra.iam.gserviceaccount.com`
+- Web regional MIG: `magento-stg-web`
+- Web health check: `magento-stg-web-healthz`
+- Worker zonal MIG: `magento-stg-worker`
+- Runtime image:
+  `us-central1-docker.pkg.dev/vwu-infra/magento/magento-modern:be9cadb291f7a5ac6946876ab2bed23a3d592ef3`
 
 The OpenSearch admin secret has an initial staging version for bootstrap. Other
-secret containers intentionally do not have committed or IaC-managed payloads.
-Populate them only through an explicit operator/CI flow.
+secret containers and Phase 6 runtime secrets intentionally do not have
+committed or IaC-managed payloads. Populate them only through an explicit
+operator/CI flow.

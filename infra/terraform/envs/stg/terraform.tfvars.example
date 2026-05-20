@@ -15,19 +15,33 @@ cloud_sql_disk_size_gb     = 100
 cloud_sql_app_password     = "REPLACE_WITH_LOCAL_OR_CI_SECRET"
 cloud_sql_release_password = "REPLACE_WITH_LOCAL_OR_CI_SECRET"
 
-redis_memory_size_gb            = 1
-redis_transit_encryption_mode   = "DISABLED"
+redis_memory_size_gb          = 1
+redis_transit_encryption_mode = "DISABLED"
 
 opensearch_node_count             = 1
 opensearch_machine_type           = "e2-standard-2"
-opensearch_version                 = "3.6.0"
-opensearch_heap_size               = "2g"
+opensearch_version                = "3.6.0"
+opensearch_heap_size              = "2g"
 opensearch_data_disk_size_gb      = 100
 
-# Later web MIG tags/ranges should be passed here so only web/worker/release
-# runtimes can reach OpenSearch HTTP.
 web_mig_source_ranges = []
 web_mig_source_tags   = ["magento-stg-web", "magento-stg-worker", "magento-stg-release"]
+
+runtime_image     = "us-central1-docker.pkg.dev/YOUR-STG-PROJECT-ID/magento/magento-modern:COMMIT_SHA"
+runtime_image_sha = "COMMIT_SHA"
+
+web_machine_type    = "e2-standard-2"
+worker_machine_type = "e2-standard-2"
+web_target_size     = 2
+worker_target_size  = 1
+
+# Google external HTTP(S) load balancer health check and proxy ranges.
+web_runtime_source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+web_runtime_source_tags   = []
+
+worker_consumers             = ["async.operations.all"]
+worker_consumer_max_messages = 10000
+cron_interval_seconds        = 60
 
 runtime_secret_accessor_members = []
 release_secret_accessor_members = []

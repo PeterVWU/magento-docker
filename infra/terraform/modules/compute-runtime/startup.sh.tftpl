@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+role="${role}"
+container_name="magento-$${role}"
+env_file="/etc/magento/runtime.env"
+
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get install -y --no-install-recommends ca-certificates curl docker.io jq
+systemctl enable --now docker
+
+install -d -m 0750 /etc/magento
+cat > "$${env_file}" <<'ENV'
+%{ for key, value in env ~}
+${key}=${value}
+%{ endfor ~}
+ENV
+chmod 0640 "$${env_file}"
+
+fetch_secret() {
+  local env_name="$1"
+  local secret_id="$2"
+  if [[ -n "$${secret_id}" ]]; then
+    local token
+    local value
+    token="$(curl -fsS -H 'Metadata-Flavor: Google' \
+      'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token' \
+      | jq -r '.access_token')"
+    value="$(curl -fsS \
+      -H "Authorization: Bearer $${token}" \
+      "https://secretmanager.googleapis.com/v1/projects/${project_id}/secrets/$${secret_id}/versions/latest:access" \
+      | jq -r '.payload.data' \
+      | base64 -d)"
+    printf '%s=%s\n' "$${env_name}" "$${value}" >> "$${env_file}"
+  fi
+}
+
+fetch_secret "MAGENTO_DB_PASSWORD" "${db_password_secret_id}"
+fetch_secret "MAGENTO_REDIS_AUTH" "${redis_auth_secret_id}"
+fetch_secret "MAGENTO_OPENSEARCH_PASSWORD" "${opensearch_password_secret_id}"
+fetch_secret "MAGENTO_CRYPT_KEY" "${crypt_key_secret_id}"
+
+registry_host="$(printf '%s' "${runtime_image}" | cut -d/ -f1)"
+if [[ "$${registry_host}" == *"pkg.dev" ]]; then
+  registry_token="$(curl -fsS -H 'Metadata-Flavor: Google' \
+    'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token' \
+    | jq -r '.access_token')"
+  printf '%s' "$${registry_token}" \
+    | docker login -u oauth2accesstoken --password-stdin "https://$${registry_host}"
+fi
+
+docker rm -f "$${container_name}" >/dev/null 2>&1 || true
+docker pull "${runtime_image}"
+exec docker run \
+  --name "$${container_name}" \
+  --restart always \
+  --env-file "$${env_file}" \
+  --log-driver=json-file \
+  --log-opt max-size=50m \
+  --log-opt max-file=5 \
+  -p 8080:8080 \
+  "${runtime_image}" \
+  "$${role}"

@@ -20,6 +20,15 @@ runtime artifacts from it into this repo.
   - Secret Manager containers
   - self-managed OpenSearch on private GCE
   - private services access and Cloud NAT
+- Staging Phase 6 compute runtime is converged as of ECOM-8:
+  - web regional MIG `magento-stg-web` with two healthy instances
+  - worker zonal MIG `magento-stg-worker` with one running instance
+  - web, worker, and release instance templates from a SHA-tagged Artifact
+    Registry image
+  - web `/healthz` backend check on port `8080`
+  - runtime/release Secret Manager IAM and VM startup secret fetches
+- The external HTTPS load balancer, DNS, managed certificate, Cloud Armor, and
+  CDN/edge integration are still pending later phases.
 
 ## OpenTofu Safety Rules
 
@@ -37,7 +46,7 @@ tofu -chdir=infra/terraform/envs/prod validate
 ```
 
 If the local OpenTofu binary is used, it currently lives at
-`.tools/opentofu/tofu` and is ignored by Git.
+`../.tools/bin/tofu` from this repo directory and is ignored by Git.
 
 ## Secrets And Data
 
@@ -48,9 +57,12 @@ If the local OpenTofu binary is used, it currently lives at
 - Raw production database dumps, media exports, `app/etc/env.php`, `.env`,
   Composer auth, and generated runtime files must stay out of Git.
 
-## ECOM-6 Follow-ups
+## ECOM Follow-ups
 
 - ECOM-79 owns production OpenSearch security hardening. ECOM-6 staging uses the
   packaged OpenSearch security bootstrap only as an initial scaffold.
-- Later MIG/load-balancer tickets should consume the Phase 5 outputs rather than
-  recreating stateful resources.
+- Later load-balancer tickets should consume the Phase 6 web MIG named port and
+  health check rather than recreating compute runtime resources.
+- Before the next apply, put the Phase 6 runtime variables and image promotion
+  values into CI or secure tfvars. The staging apply used CLI `-var` values for
+  the runtime image, image SHA, worker consumers, and web source ranges.

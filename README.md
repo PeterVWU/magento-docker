@@ -21,14 +21,23 @@ The runtime architecture rules live in
 The Phase 5 managed-service contract lives in
 `docs/ecom-6/managed-stateful-services.md`.
 
+The Phase 6 compute-runtime contract lives in
+`docs/ecom-8/compute-runtime.md`.
+
 ## Infrastructure
 
 Infrastructure-as-code lives under `infra/terraform` and uses OpenTofu. The
 Phase 5 staging stateful-services stack for `vwu-infra` has been applied and
 converged by ECOM-6. It provisions Cloud SQL, Memorystore Redis, GCS buckets,
 Secret Manager containers, self-managed private OpenSearch on GCE, private
-services access, Cloud NAT, and service-account IAM needed by later MIG-based
-runtime tickets.
+services access, Cloud NAT, and service-account IAM.
+
+Phase 6 staging compute runtime is also applied in `vwu-infra`. It provisions
+SHA-tagged web, worker, and release instance templates, a two-instance healthy
+regional web MIG, a one-instance worker MIG, runtime startup secret wiring, and
+the web `/healthz` backend check on port `8080`. The external HTTPS load
+balancer, DNS, certificate, Cloud Armor, and CDN/edge boundary remain a later
+phase.
 
 Operational notes for future agents and engineers live in `AGENTS.md`.
 

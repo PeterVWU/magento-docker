@@ -33,3 +33,27 @@ output "service_account_emails" {
 output "enabled_project_services" {
   value = module.project_services.enabled_services
 }
+
+output "web_instance_group" {
+  value = module.compute_runtime.web_instance_group
+}
+
+output "web_instance_template" {
+  value = module.compute_runtime.web_instance_template
+}
+
+output "worker_instance_group" {
+  value = module.compute_runtime.worker_instance_group
+}
+
+output "worker_instance_template" {
+  value = module.compute_runtime.worker_instance_template
+}
+
+output "release_instance_template" {
+  value = module.compute_runtime.release_instance_template
+}
+
+output "web_health_check" {
+  value = module.compute_runtime.web_health_check
+}

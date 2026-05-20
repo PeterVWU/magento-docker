@@ -75,6 +75,61 @@ variable "web_mig_source_tags" {
   default = []
 }
 
+variable "runtime_image" {
+  description = "SHA-tagged Magento runtime container image."
+  type        = string
+}
+
+variable "runtime_image_sha" {
+  description = "Commit SHA or image version used for runtime metadata."
+  type        = string
+}
+
+variable "web_machine_type" {
+  type    = string
+  default = "e2-standard-2"
+}
+
+variable "worker_machine_type" {
+  type    = string
+  default = "e2-standard-2"
+}
+
+variable "web_target_size" {
+  type    = number
+  default = 2
+}
+
+variable "worker_target_size" {
+  type    = number
+  default = 1
+}
+
+variable "web_runtime_source_ranges" {
+  type    = list(string)
+  default = []
+}
+
+variable "web_runtime_source_tags" {
+  type    = list(string)
+  default = []
+}
+
+variable "worker_consumers" {
+  type    = list(string)
+  default = []
+}
+
+variable "worker_consumer_max_messages" {
+  type    = number
+  default = 10000
+}
+
+variable "cron_interval_seconds" {
+  type    = number
+  default = 60
+}
+
 variable "runtime_secret_accessor_members" {
   type    = set(string)
   default = []

@@ -25,6 +25,19 @@ resource "google_project_iam_member" "service_account_log_writers" {
   depends_on = [module.project_services, module.service_accounts]
 }
 
+resource "google_project_iam_member" "runtime_artifact_registry_readers" {
+  for_each = {
+    runtime = module.service_accounts.members.runtime
+    release = module.service_accounts.members.release
+  }
+
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = each.value
+
+  depends_on = [module.project_services, module.service_accounts]
+}
+
 module "cloud_nat" {
   source               = "../../modules/cloud-nat"
   project_id           = var.project_id
@@ -108,6 +121,24 @@ module "secrets" {
   depends_on = [module.project_services]
 }
 
+resource "google_secret_manager_secret_iam_member" "runtime_service_account_secret_access" {
+  for_each = local.runtime_secret_ids
+
+  project   = var.project_id
+  secret_id = module.secrets.secret_ids[each.value]
+  role      = "roles/secretmanager.secretAccessor"
+  member    = module.service_accounts.members.runtime
+}
+
+resource "google_secret_manager_secret_iam_member" "release_service_account_secret_access" {
+  for_each = setunion(local.release_secret_ids, local.runtime_secret_ids)
+
+  project   = var.project_id
+  secret_id = module.secrets.secret_ids[each.value]
+  role      = "roles/secretmanager.secretAccessor"
+  member    = module.service_accounts.members.release
+}
+
 resource "google_secret_manager_secret_iam_member" "opensearch_admin_access" {
   project   = var.project_id
   secret_id = module.secrets.secret_ids[local.opensearch_admin_secret_id]
@@ -137,4 +168,45 @@ module "opensearch" {
   labels                   = local.labels
 
   depends_on = [module.project_services, module.cloud_nat]
+}
+
+module "compute_runtime" {
+  source                        = "../../modules/compute-runtime"
+  name_prefix                   = local.name_prefix
+  project_id                    = var.project_id
+  region                        = var.region
+  zone                          = var.zone
+  network                       = var.network_self_link
+  subnetwork                    = var.subnetwork_self_link
+  runtime_image                 = var.runtime_image
+  image_sha                     = var.runtime_image_sha
+  environment                   = local.environment
+  web_machine_type              = var.web_machine_type
+  worker_machine_type           = var.worker_machine_type
+  web_target_size               = var.web_target_size
+  worker_target_size            = var.worker_target_size
+  service_account_email         = module.service_accounts.emails.runtime
+  release_service_account_email = module.service_accounts.emails.release
+  db_host                       = module.cloud_sql.private_ip_address
+  db_name                       = module.cloud_sql.database_name
+  db_user                       = module.cloud_sql.app_user_name
+  db_release_user               = module.cloud_sql.release_user_name
+  db_password_secret_id         = "magento-prod-db-app-password"
+  db_release_password_secret_id = "magento-prod-db-release-password"
+  redis_host                    = module.redis.host
+  redis_port                    = module.redis.port
+  redis_auth_secret_id          = "magento-prod-redis-auth"
+  opensearch_host               = module.opensearch.node_private_ips[0]
+  opensearch_password_secret_id = "magento-prod-opensearch-app-password"
+  crypt_key_secret_id           = "magento-prod-app-crypt-key"
+  media_bucket_name             = module.buckets.media_bucket_name
+  assets_bucket_name            = module.buckets.assets_bucket_name
+  web_source_ranges             = var.web_runtime_source_ranges
+  web_source_tags               = var.web_runtime_source_tags
+  worker_consumers              = var.worker_consumers
+  worker_consumer_max_messages  = var.worker_consumer_max_messages
+  cron_interval_seconds         = var.cron_interval_seconds
+  labels                        = merge(local.labels, { phase = "ecom-8" })
+
+  depends_on = [module.project_services, module.cloud_nat, module.secrets]
 }
