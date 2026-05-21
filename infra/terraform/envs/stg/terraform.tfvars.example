@@ -43,6 +43,24 @@ worker_consumers             = ["async.operations.all"]
 worker_consumer_max_messages = 10000
 cron_interval_seconds        = 60
 
+magento_base_url                 = "https://uat.vapewholesaleusa.com/"
+magento_secure_base_url          = "https://uat.vapewholesaleusa.com/"
+magento_opensearch_index_prefix  = "magento_stg"
+
+# Phase 7 staging load balancer. Set the domain to the final staging hostname
+# before apply. If Cloud DNS is managed elsewhere, leave the DNS values null and
+# create the A record manually from the output IP address.
+enable_external_https_lb = true
+external_https_lb_domains = [
+  "uat.vapewholesaleusa.com",
+]
+external_https_lb_existing_certificate_self_links = []
+external_https_lb_dns_managed_zone                = null
+external_https_lb_dns_record_name                 = null
+external_https_lb_enable_http_redirect            = true
+external_https_lb_enable_cdn                      = false
+external_https_lb_security_policy                 = null
+
 runtime_secret_accessor_members = []
 release_secret_accessor_members = []
 build_secret_accessor_members   = []

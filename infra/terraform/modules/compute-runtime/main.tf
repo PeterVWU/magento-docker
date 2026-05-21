@@ -16,9 +16,14 @@ locals {
     MAGENTO_OPENSEARCH_HOST               = var.opensearch_host
     MAGENTO_OPENSEARCH_PORT               = tostring(var.opensearch_port)
     MAGENTO_OPENSEARCH_PASSWORD_SECRET_ID = var.opensearch_password_secret_id
+    MAGENTO_OPENSEARCH_SSL_VERIFY         = var.opensearch_ssl_verify ? "1" : "0"
     MAGENTO_CRYPT_KEY_SECRET_ID           = var.crypt_key_secret_id
     MAGENTO_MEDIA_BUCKET                  = var.media_bucket_name
     MAGENTO_ASSETS_BUCKET                 = var.assets_bucket_name
+    MAGENTO_BASE_URL                      = var.base_url
+    MAGENTO_SECURE_BASE_URL               = var.secure_base_url
+    MAGENTO_OPENSEARCH_INDEX_PREFIX       = var.opensearch_index_prefix
+    MAGENTO_OPENSEARCH_USER               = var.opensearch_user
   }
 
   web_env = merge(local.common_env, {

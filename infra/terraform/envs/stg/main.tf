@@ -69,6 +69,7 @@ module "cloud_sql" {
   network_self_link     = var.network_self_link
   app_user_password     = var.cloud_sql_app_password
   release_user_password = var.cloud_sql_release_password
+  database_flags        = { log_bin_trust_function_creators = "on" }
   deletion_protection   = true
   labels                = local.labels
 
@@ -196,11 +197,15 @@ module "compute_runtime" {
   redis_host                    = module.redis.host
   redis_port                    = module.redis.port
   redis_auth_secret_id          = "magento-stg-redis-auth"
-  opensearch_host               = module.opensearch.node_private_ips[0]
+  opensearch_host               = "https://${module.opensearch.node_private_ips[0]}"
   opensearch_password_secret_id = "magento-stg-opensearch-app-password"
+  opensearch_ssl_verify         = false
   crypt_key_secret_id           = "magento-stg-app-crypt-key"
   media_bucket_name             = module.buckets.media_bucket_name
   assets_bucket_name            = module.buckets.assets_bucket_name
+  base_url                      = var.magento_base_url
+  secure_base_url               = var.magento_secure_base_url
+  opensearch_index_prefix       = var.magento_opensearch_index_prefix
   web_source_ranges             = var.web_runtime_source_ranges
   web_source_tags               = var.web_runtime_source_tags
   worker_consumers              = var.worker_consumers
@@ -209,4 +214,23 @@ module "compute_runtime" {
   labels                        = merge(local.labels, { phase = "ecom-8" })
 
   depends_on = [module.project_services, module.cloud_nat, module.secrets]
+}
+
+module "external_https_lb" {
+  source                          = "../../modules/external-https-lb"
+  enabled                         = var.enable_external_https_lb
+  name_prefix                     = local.name_prefix
+  project_id                      = var.project_id
+  backend_instance_group          = module.compute_runtime.web_instance_group
+  health_check                    = module.compute_runtime.web_health_check
+  managed_ssl_certificate_domains = var.external_https_lb_domains
+  ssl_certificate_self_links      = var.external_https_lb_existing_certificate_self_links
+  enable_http_redirect            = var.external_https_lb_enable_http_redirect
+  enable_cdn                      = var.external_https_lb_enable_cdn
+  security_policy                 = var.external_https_lb_security_policy
+  dns_managed_zone                = var.external_https_lb_dns_managed_zone
+  dns_record_name                 = var.external_https_lb_dns_record_name
+  labels                          = merge(local.labels, { phase = "ecom-4" })
+
+  depends_on = [module.project_services, module.compute_runtime]
 }

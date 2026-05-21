@@ -43,6 +43,20 @@ worker_consumers             = ["async.operations.all"]
 worker_consumer_max_messages = 10000
 cron_interval_seconds        = 60
 
+magento_base_url                = "https://www.example.com/"
+magento_secure_base_url         = "https://www.example.com/"
+magento_opensearch_index_prefix = "magento_prod"
+
+# Keep disabled until the production edge phase is explicitly ready.
+enable_external_https_lb                         = false
+external_https_lb_domains                        = []
+external_https_lb_existing_certificate_self_links = []
+external_https_lb_dns_managed_zone               = null
+external_https_lb_dns_record_name                = null
+external_https_lb_enable_http_redirect           = true
+external_https_lb_enable_cdn                     = false
+external_https_lb_security_policy                = null
+
 runtime_secret_accessor_members = []
 release_secret_accessor_members = []
 build_secret_accessor_members   = []

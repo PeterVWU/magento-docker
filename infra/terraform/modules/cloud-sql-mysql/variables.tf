@@ -55,6 +55,11 @@ variable "retained_backups" {
   type    = number
   default = 14
 }
+variable "database_flags" {
+  description = "Cloud SQL database flags applied to the MySQL instance."
+  type        = map(string)
+  default     = {}
+}
 variable "deletion_protection" {
   type    = bool
   default = true

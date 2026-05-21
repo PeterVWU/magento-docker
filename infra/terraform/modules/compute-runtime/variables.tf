@@ -115,6 +115,32 @@ variable "opensearch_port" {
   default = 9200
 }
 
+variable "opensearch_user" {
+  type    = string
+  default = "admin"
+}
+
+variable "opensearch_ssl_verify" {
+  description = "Whether Magento should verify the OpenSearch HTTPS certificate."
+  type        = bool
+  default     = true
+}
+
+variable "opensearch_index_prefix" {
+  type    = string
+  default = "magento2"
+}
+
+variable "base_url" {
+  type    = string
+  default = "http://localhost:8080/"
+}
+
+variable "secure_base_url" {
+  type    = string
+  default = "http://localhost:8080/"
+}
+
 variable "opensearch_password_secret_id" {
   type = string
 }

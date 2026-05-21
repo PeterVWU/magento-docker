@@ -41,7 +41,9 @@ DOCKER_BUILDKIT=1 docker build \
 ```
 
 The runtime image exposes port `8080` and has a lightweight `/healthz` endpoint
-for load balancer and MIG health checks.
+for web load balancer and MIG health checks. Container health is role-aware:
+`web` checks `/healthz`, `worker` checks the entrypoint-managed cron/consumer
+loop PIDs, and `release` verifies the generated Magento environment file exists.
 
 ## Runtime Roles
 
@@ -59,7 +61,9 @@ purge.
 
 `worker` runs Magento cron when `MAGENTO_RUN_CRON=1` and starts comma-separated
 queue consumers from `MAGENTO_CONSUMERS`. Consumer runs are bounded by
-`MAGENTO_CONSUMER_MAX_MESSAGES` and restarted by the entrypoint.
+`MAGENTO_CONSUMER_MAX_MESSAGES` and restarted by the entrypoint. The entrypoint
+records the active worker loop PIDs for the container healthcheck so workers do
+not depend on the web-only HTTP listener.
 
 `release` is the only role allowed to run deploy-time mutation. To run the
 default release sequence, set `MAGENTO_RELEASE_RUN_UPGRADE=1`. Without that

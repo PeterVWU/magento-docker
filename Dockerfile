@@ -79,6 +79,9 @@ RUN --mount=type=secret,id=composer_auth,target=/run/secrets/composer-auth.json,
 COPY . /var/www/html
 
 RUN set -eux; \
+    php docker/production/patch-opensearch-client.php
+
+RUN set -eux; \
     bin/magento setup:di:compile
 
 RUN set -eux; \
@@ -138,8 +141,10 @@ RUN apt-get update \
 COPY --from=build --chown=www-data:www-data /var/www/html /var/www/html
 COPY docker/production/nginx.conf /etc/nginx/nginx.conf
 COPY docker/production/entrypoint.sh /usr/local/bin/magento-entrypoint
+COPY docker/production/healthcheck.sh /usr/local/bin/magento-healthcheck
 
 RUN chmod 0755 /usr/local/bin/magento-entrypoint \
+    && chmod 0755 /usr/local/bin/magento-healthcheck \
     && mkdir -p var generated pub/static pub/media \
     && find var generated pub/static pub/media -type d -exec chmod 0775 {} + \
     && find var generated pub/static pub/media -type f -exec chmod 0664 {} +
@@ -154,7 +159,7 @@ ENV MAGENTO_IMAGE_SHA="${VCS_REF}" \
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -fsS http://127.0.0.1:8080/healthz >/dev/null || exit 1
+    CMD magento-healthcheck
 
 ENTRYPOINT ["magento-entrypoint"]
 CMD ["web"]

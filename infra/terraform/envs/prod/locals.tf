@@ -29,7 +29,7 @@ locals {
     local.opensearch_admin_secret_id,
   ])
 
-  required_project_services = toset([
+  base_project_services = toset([
     "compute.googleapis.com",
     "iam.googleapis.com",
     "logging.googleapis.com",
@@ -39,6 +39,12 @@ locals {
     "secretmanager.googleapis.com",
     "storage.googleapis.com",
   ])
+
+  dns_project_services = var.external_https_lb_dns_managed_zone != null ? toset([
+    "dns.googleapis.com",
+  ]) : toset([])
+
+  required_project_services = setunion(local.base_project_services, local.dns_project_services)
 
   secret_ids = setunion(
     local.runtime_secret_ids,

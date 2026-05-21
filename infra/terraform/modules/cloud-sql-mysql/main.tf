@@ -34,6 +34,15 @@ resource "google_sql_database_instance" "mysql" {
       hour = var.maintenance_hour
     }
 
+    dynamic "database_flags" {
+      for_each = var.database_flags
+
+      content {
+        name  = database_flags.key
+        value = database_flags.value
+      }
+    }
+
     insights_config {
       query_insights_enabled  = true
       record_application_tags = true

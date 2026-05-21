@@ -27,8 +27,18 @@ runtime artifacts from it into this repo.
     Registry image
   - web `/healthz` backend check on port `8080`
   - runtime/release Secret Manager IAM and VM startup secret fetches
-- The external HTTPS load balancer, DNS, managed certificate, Cloud Armor, and
-  CDN/edge integration are still pending later phases.
+- ECOM-4 Phase 7 staging is converged:
+  - external HTTPS LB, HTTP redirect, and managed certificate are applied for
+    `uat.vapewholesaleusa.com`
+  - UAT DNS is managed externally in Cloudflare and points to LB IP
+    `8.233.55.120`
+  - staging DB was reset and loaded with the first ECOM-7 rehearsal dataset
+  - release role, reindex, GraphQL/catalog search, web health, and worker cron
+    were validated against staging data
+  - container health is role-aware: web probes `/healthz`, worker checks
+    cron/consumer loop PIDs, and release checks the generated env file
+- Cloud Armor and CDN/edge integration are still disabled by default and remain
+  later hardening/performance work.
 
 ## OpenTofu Safety Rules
 
@@ -46,7 +56,7 @@ tofu -chdir=infra/terraform/envs/prod validate
 ```
 
 If the local OpenTofu binary is used, it currently lives at
-`../.tools/bin/tofu` from this repo directory and is ignored by Git.
+`$HOME/.local/bin/tofu`.
 
 ## Secrets And Data
 
@@ -61,8 +71,9 @@ If the local OpenTofu binary is used, it currently lives at
 
 - ECOM-79 owns production OpenSearch security hardening. ECOM-6 staging uses the
   packaged OpenSearch security bootstrap only as an initial scaffold.
-- Later load-balancer tickets should consume the Phase 6 web MIG named port and
-  health check rather than recreating compute runtime resources.
-- Before the next apply, put the Phase 6 runtime variables and image promotion
-  values into CI or secure tfvars. The staging apply used CLI `-var` values for
-  the runtime image, image SHA, worker consumers, and web source ranges.
+- The next migration rehearsal/export pass should repair the low
+  `setup_module` count observed in the first rehearsal dataset so staging/prod
+  imports do not depend on metadata repair steps.
+- Put runtime image promotion into CI or a controlled release runbook before
+  production cut-over. Staging currently uses secure tfvars for the active image
+  tag and runtime sizing inputs.

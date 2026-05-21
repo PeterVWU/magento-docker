@@ -8,6 +8,7 @@ service contract in:
 
 - `../../docs/ecom-6/managed-stateful-services.md`
 - `../../docs/ecom-8/compute-runtime.md`
+- `../../docs/ecom-4/staging-deployment.md`
 - `../../docs/architecture/runtime-contract.md`
 
 ## Layout
@@ -25,6 +26,7 @@ modules/
   secret-manager/
   opensearch-gce/
   compute-runtime/
+  external-https-lb/
 ```
 
 The environment roots compose reusable modules and keep environment-specific
@@ -32,8 +34,8 @@ sizing, project, region, and network inputs out of the modules.
 
 ## Current Scope
 
-This root now covers the Phase 5 stateful-services foundation and Phase 6
-compute runtime boundary.
+This root now covers the Phase 5 stateful-services foundation, Phase 6 compute
+runtime boundary, and Phase 7 external HTTPS load-balancer wiring.
 
 Included in this slice:
 
@@ -46,11 +48,13 @@ Included in this slice:
 - self-managed OpenSearch-on-GCE scaffolding;
 - SHA-tagged Magento web, worker, and release instance templates;
 - a stateless web regional MIG with lightweight `/healthz` checks;
-- a small worker MIG for cron and queue consumers.
+- a small worker MIG for cron and queue consumers;
+- an optional global external HTTPS load balancer in front of the web MIG.
 
-The external HTTPS load balancer, managed certificate, DNS, Cloud Armor, and
-CDN/edge integration remain a later deployment boundary. The web MIG exposes a
-named `http` port and health check for that later frontend.
+The load-balancer module can create a global frontend IP, backend service,
+managed certificate, HTTP-to-HTTPS redirect, and optional Cloud DNS A record.
+Cloud Armor and CDN are exposed as inputs but stay disabled by default for
+staging.
 
 ## Compute Runtime
 
@@ -67,7 +71,9 @@ Runtime startup installs Docker on a private Debian VM, pulls the SHA-tagged
 runtime image, writes non-secret service wiring into `/etc/magento/runtime.env`,
 fetches secret payloads from Secret Manager with the VM service account, and
 starts the selected container role. The web health check uses `/healthz` on port
-`8080`, matching the runtime image contract.
+`8080`, matching the runtime image contract. Container health is role-aware in
+the image: web checks the HTTP listener, while worker checks its cron/consumer
+loop PIDs instead of probing the web port.
 
 The templates emit environment, role, image SHA, and phase metadata for
 observability and rollback. Rollback is a template/image rollback in the MIG,
@@ -136,8 +142,9 @@ Secret versions should be injected through a controlled operator or CI process.
 
 ## Applied Staging State
 
-ECOM-6 and ECOM-8 applied the staging root to GCP project `vwu-infra`. The final
-OpenTofu drift check after the compute-runtime rollout reported no changes.
+ECOM-6, ECOM-8, and ECOM-4 applied the staging root to GCP project `vwu-infra`.
+The final OpenTofu drift check after the Phase 7 worker-health rollout reported
+no changes.
 
 Key staging outputs:
 
@@ -154,8 +161,10 @@ Key staging outputs:
 - Web regional MIG: `magento-stg-web`
 - Web health check: `magento-stg-web-healthz`
 - Worker zonal MIG: `magento-stg-worker`
+- Staging LB IP: `8.233.55.120`
+- Staging LB hostname: `uat.vapewholesaleusa.com`
 - Runtime image:
-  `us-central1-docker.pkg.dev/vwu-infra/magento/magento-modern:be9cadb291f7a5ac6946876ab2bed23a3d592ef3`
+  `us-central1-docker.pkg.dev/vwu-infra/magento/magento-modern:ecom4-worker-health-20260521212833`
 
 The OpenSearch admin secret has an initial staging version for bootstrap. Other
 secret containers and Phase 6 runtime secrets intentionally do not have

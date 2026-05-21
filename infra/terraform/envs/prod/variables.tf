@@ -130,6 +130,66 @@ variable "cron_interval_seconds" {
   default = 60
 }
 
+variable "magento_base_url" {
+  type    = string
+  default = "http://localhost:8080/"
+}
+
+variable "magento_secure_base_url" {
+  type    = string
+  default = "http://localhost:8080/"
+}
+
+variable "magento_opensearch_index_prefix" {
+  type    = string
+  default = "magento2"
+}
+
+variable "enable_external_https_lb" {
+  type    = bool
+  default = false
+}
+
+variable "external_https_lb_domains" {
+  description = "Domains for the Google-managed HTTPS certificate."
+  type        = list(string)
+  default     = []
+}
+
+variable "external_https_lb_existing_certificate_self_links" {
+  description = "Existing SSL certificate self links to attach instead of, or in addition to, the managed certificate."
+  type        = list(string)
+  default     = []
+}
+
+variable "external_https_lb_dns_managed_zone" {
+  description = "Optional Cloud DNS managed zone name for the A record."
+  type        = string
+  default     = null
+}
+
+variable "external_https_lb_dns_record_name" {
+  description = "Optional fully qualified DNS record name, ending with a dot."
+  type        = string
+  default     = null
+}
+
+variable "external_https_lb_enable_http_redirect" {
+  type    = bool
+  default = true
+}
+
+variable "external_https_lb_enable_cdn" {
+  type    = bool
+  default = false
+}
+
+variable "external_https_lb_security_policy" {
+  description = "Optional Cloud Armor security policy self link."
+  type        = string
+  default     = null
+}
+
 variable "runtime_secret_accessor_members" {
   type    = set(string)
   default = []

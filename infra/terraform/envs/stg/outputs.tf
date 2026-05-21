@@ -57,3 +57,27 @@ output "release_instance_template" {
 output "web_health_check" {
   value = module.compute_runtime.web_health_check
 }
+
+output "external_https_lb_ip_address" {
+  value = module.external_https_lb.ip_address
+}
+
+output "external_https_lb_backend_service" {
+  value = module.external_https_lb.backend_service
+}
+
+output "external_https_lb_https_forwarding_rule" {
+  value = module.external_https_lb.https_forwarding_rule
+}
+
+output "external_https_lb_http_forwarding_rule" {
+  value = module.external_https_lb.http_forwarding_rule
+}
+
+output "external_https_lb_managed_ssl_certificate" {
+  value = module.external_https_lb.managed_ssl_certificate
+}
+
+output "external_https_lb_dns_record_name" {
+  value = module.external_https_lb.dns_record_name
+}

@@ -24,6 +24,9 @@ The Phase 5 managed-service contract lives in
 The Phase 6 compute-runtime contract lives in
 `docs/ecom-8/compute-runtime.md`.
 
+The Phase 7 staging-deployment contract lives in
+`docs/ecom-4/staging-deployment.md`.
+
 ## Infrastructure
 
 Infrastructure-as-code lives under `infra/terraform` and uses OpenTofu. The
@@ -35,9 +38,17 @@ services access, Cloud NAT, and service-account IAM.
 Phase 6 staging compute runtime is also applied in `vwu-infra`. It provisions
 SHA-tagged web, worker, and release instance templates, a two-instance healthy
 regional web MIG, a one-instance worker MIG, runtime startup secret wiring, and
-the web `/healthz` backend check on port `8080`. The external HTTPS load
-balancer, DNS, certificate, Cloud Armor, and CDN/edge boundary remain a later
-phase.
+the web `/healthz` backend check on port `8080`. The runtime image uses a
+role-aware container healthcheck: web probes `/healthz`, worker checks its
+cron/consumer loop PIDs, and release checks the generated Magento environment
+file.
+
+Phase 7 staging is applied for `https://uat.vapewholesaleusa.com/`. It adds the
+reusable external HTTPS load-balancer module, managed certificate, optional DNS
+record support, staging base URL wiring, OpenSearch runtime auth support, Cloud
+SQL function-creator flag support, and the first production-like rehearsal-data
+load. The UAT DNS record is managed outside Terraform in Cloudflare and points
+at staging LB IP `8.233.55.120`.
 
 Operational notes for future agents and engineers live in `AGENTS.md`.
 
