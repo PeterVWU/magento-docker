@@ -41,6 +41,8 @@ fetch_secret "MAGENTO_DB_PASSWORD" "${db_password_secret_id}"
 fetch_secret "MAGENTO_REDIS_AUTH" "${redis_auth_secret_id}"
 fetch_secret "MAGENTO_OPENSEARCH_PASSWORD" "${opensearch_password_secret_id}"
 fetch_secret "MAGENTO_CRYPT_KEY" "${crypt_key_secret_id}"
+fetch_secret "MAGENTO_MEDIA_HMAC_KEY" "${media_hmac_key_secret_id}"
+fetch_secret "MAGENTO_MEDIA_HMAC_SECRET" "${media_hmac_secret_secret_id}"
 
 registry_host="$(printf '%s' "${runtime_image}" | cut -d/ -f1)"
 if [[ "$${registry_host}" == *"pkg.dev" ]]; then

@@ -140,6 +140,24 @@ resource "google_secret_manager_secret_iam_member" "release_service_account_secr
   member    = module.service_accounts.members.release
 }
 
+resource "google_secret_manager_secret_iam_member" "media_hmac_runtime_secret_access" {
+  for_each = local.media_hmac_secret_ids
+
+  project   = var.project_id
+  secret_id = each.value
+  role      = "roles/secretmanager.secretAccessor"
+  member    = module.service_accounts.members.runtime
+}
+
+resource "google_secret_manager_secret_iam_member" "media_hmac_release_secret_access" {
+  for_each = local.media_hmac_secret_ids
+
+  project   = var.project_id
+  secret_id = each.value
+  role      = "roles/secretmanager.secretAccessor"
+  member    = module.service_accounts.members.release
+}
+
 resource "google_secret_manager_secret_iam_member" "opensearch_admin_access" {
   project   = var.project_id
   secret_id = module.secrets.secret_ids[local.opensearch_admin_secret_id]
@@ -202,6 +220,9 @@ module "compute_runtime" {
   opensearch_ssl_verify         = false
   crypt_key_secret_id           = "magento-stg-app-crypt-key"
   media_bucket_name             = module.buckets.media_bucket_name
+  media_bucket_prefix           = ""
+  media_hmac_key_secret_id      = local.media_hmac_key_secret_id
+  media_hmac_secret_secret_id   = local.media_hmac_secret_secret_id
   assets_bucket_name            = module.buckets.assets_bucket_name
   base_url                      = var.magento_base_url
   secure_base_url               = var.magento_secure_base_url

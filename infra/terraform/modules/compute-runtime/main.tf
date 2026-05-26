@@ -19,6 +19,11 @@ locals {
     MAGENTO_OPENSEARCH_SSL_VERIFY         = var.opensearch_ssl_verify ? "1" : "0"
     MAGENTO_CRYPT_KEY_SECRET_ID           = var.crypt_key_secret_id
     MAGENTO_MEDIA_BUCKET                  = var.media_bucket_name
+    MAGENTO_MEDIA_PREFIX                  = var.media_bucket_prefix
+    MAGENTO_MEDIA_DRIVER                  = var.media_driver
+    MAGENTO_MEDIA_ENDPOINT                = var.media_endpoint
+    MAGENTO_MEDIA_REGION                  = var.media_region
+    MAGENTO_MEDIA_PATH_STYLE              = var.media_path_style ? "1" : "0"
     MAGENTO_ASSETS_BUCKET                 = var.assets_bucket_name
     MAGENTO_BASE_URL                      = var.base_url
     MAGENTO_SECURE_BASE_URL               = var.secure_base_url
@@ -102,6 +107,8 @@ resource "google_compute_instance_template" "web" {
     redis_auth_secret_id          = var.redis_auth_secret_id
     opensearch_password_secret_id = var.opensearch_password_secret_id
     crypt_key_secret_id           = var.crypt_key_secret_id
+    media_hmac_key_secret_id      = var.media_hmac_key_secret_id
+    media_hmac_secret_secret_id   = var.media_hmac_secret_secret_id
   })
 
   lifecycle {
@@ -182,6 +189,8 @@ resource "google_compute_instance_template" "worker" {
     redis_auth_secret_id          = var.redis_auth_secret_id
     opensearch_password_secret_id = var.opensearch_password_secret_id
     crypt_key_secret_id           = var.crypt_key_secret_id
+    media_hmac_key_secret_id      = var.media_hmac_key_secret_id
+    media_hmac_secret_secret_id   = var.media_hmac_secret_secret_id
   })
 
   lifecycle {
@@ -230,6 +239,8 @@ resource "google_compute_instance_template" "release" {
     redis_auth_secret_id          = var.redis_auth_secret_id
     opensearch_password_secret_id = var.opensearch_password_secret_id
     crypt_key_secret_id           = var.crypt_key_secret_id
+    media_hmac_key_secret_id      = var.media_hmac_key_secret_id
+    media_hmac_secret_secret_id   = var.media_hmac_secret_secret_id
   })
 
   lifecycle {

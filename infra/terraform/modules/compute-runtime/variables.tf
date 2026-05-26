@@ -153,6 +153,48 @@ variable "media_bucket_name" {
   type = string
 }
 
+variable "media_bucket_prefix" {
+  description = "Remote-storage object prefix used as Magento pub/media root."
+  type        = string
+  default     = "media"
+}
+
+variable "media_driver" {
+  description = "Magento remote storage driver code."
+  type        = string
+  default     = "gcs-s3"
+}
+
+variable "media_endpoint" {
+  description = "S3-compatible endpoint for the media bucket."
+  type        = string
+  default     = "https://storage.googleapis.com"
+}
+
+variable "media_region" {
+  description = "Region value accepted by the S3-compatible media client."
+  type        = string
+  default     = "auto"
+}
+
+variable "media_path_style" {
+  description = "Whether the S3-compatible media client should use path-style URLs."
+  type        = bool
+  default     = true
+}
+
+variable "media_hmac_key_secret_id" {
+  description = "Optional Secret Manager secret ID for the GCS HMAC access key."
+  type        = string
+  default     = ""
+}
+
+variable "media_hmac_secret_secret_id" {
+  description = "Optional Secret Manager secret ID for the GCS HMAC secret."
+  type        = string
+  default     = ""
+}
+
 variable "assets_bucket_name" {
   type = string
 }

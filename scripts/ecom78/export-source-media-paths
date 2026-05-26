@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+output_dir="${1:-$repo_root/var/import/production-derived/ecom78-media}"
+output_file="$output_dir/source-media-paths.tsv"
+summary_file="$output_dir/source-media-path-summary.tsv"
+
+mkdir -p "$output_dir"
+cd "$repo_root"
+
+mysql_exec() {
+  docker compose exec -T db mysql -uroot -pmagento-root -D vusa_db0 "$@"
+}
+
+run_query() {
+  local sql="$1"
+
+  mysql_exec --batch --skip-column-names -e "$sql" >> "$output_file"
+}
+
+cat docs/ecom-7/source-selection.sql docs/ecom-7/dataset-assembly.sql \
+  | mysql_exec >/dev/null
+
+printf 'media_family\tentity_kind\tentity_key\tmedia_path\traw_value\n' > "$output_file"
+
+run_query "
+SELECT DISTINCT
+    'product_gallery' AS media_family,
+    'product' AS entity_kind,
+    product.sku AS entity_key,
+    CONCAT('catalog/product/', TRIM(LEADING '/' FROM gallery.value)) AS media_path,
+    gallery.value AS raw_value
+FROM catalog_product_entity_media_gallery gallery
+JOIN catalog_product_entity_media_gallery_value_to_entity relation
+    ON relation.value_id = gallery.value_id
+JOIN catalog_product_entity product
+    ON product.entity_id = relation.entity_id
+JOIN ecom7_product_sample sample
+    ON sample.product_id = product.entity_id
+WHERE gallery.value IS NOT NULL
+    AND gallery.value <> ''
+ORDER BY entity_key, media_path"
+
+run_query "
+SELECT DISTINCT
+    CONCAT('product_', attribute.attribute_code) AS media_family,
+    'product' AS entity_kind,
+    product.sku AS entity_key,
+    CONCAT('catalog/product/', TRIM(LEADING '/' FROM value.value)) AS media_path,
+    value.value AS raw_value
+FROM catalog_product_entity_varchar value
+JOIN eav_attribute attribute
+    ON attribute.attribute_id = value.attribute_id
+JOIN eav_entity_type entity_type
+    ON entity_type.entity_type_id = attribute.entity_type_id
+    AND entity_type.entity_type_code = 'catalog_product'
+JOIN catalog_product_entity product
+    ON product.entity_id = value.entity_id
+JOIN ecom7_product_sample sample
+    ON sample.product_id = product.entity_id
+WHERE attribute.attribute_code IN ('image', 'small_image', 'thumbnail', 'swatch_image')
+    AND value.value IS NOT NULL
+    AND value.value NOT IN ('', 'no_selection')
+ORDER BY entity_key, media_family, media_path"
+
+run_query "
+SELECT DISTINCT
+    CONCAT('category_', attribute.attribute_code) AS media_family,
+    'category' AS entity_kind,
+    CAST(category.entity_id AS CHAR) AS entity_key,
+    CASE
+        WHEN value.value LIKE 'catalog/category/%' THEN value.value
+        ELSE CONCAT('catalog/category/', TRIM(LEADING '/' FROM value.value))
+    END AS media_path,
+    value.value AS raw_value
+FROM catalog_category_entity_varchar value
+JOIN eav_attribute attribute
+    ON attribute.attribute_id = value.attribute_id
+JOIN eav_entity_type entity_type
+    ON entity_type.entity_type_id = attribute.entity_type_id
+    AND entity_type.entity_type_code = 'catalog_category'
+JOIN catalog_category_entity category
+    ON category.entity_id = value.entity_id
+JOIN catalog_category_product category_product
+    ON category_product.category_id = category.entity_id
+JOIN ecom7_product_sample sample
+    ON sample.product_id = category_product.product_id
+WHERE attribute.attribute_code IN ('image', 'thumbnail')
+    AND value.value IS NOT NULL
+    AND value.value NOT IN ('', 'no_selection')
+ORDER BY entity_key, media_family, media_path"
+
+customer_attachment_exists="$(
+  mysql_exec --batch --skip-column-names -e "
+SELECT COUNT(*)
+FROM information_schema.tables
+WHERE table_schema = DATABASE()
+    AND table_name = 'customer_attachment'"
+)"
+
+if [[ "$customer_attachment_exists" == "1" ]]; then
+  run_query "
+SELECT DISTINCT
+    'customer_attachment' AS media_family,
+    'customer' AS entity_kind,
+    CAST(attachment.customer_id AS CHAR) AS entity_key,
+    TRIM(LEADING '/' FROM attachment.file) AS media_path,
+    attachment.file AS raw_value
+FROM customer_attachment attachment
+JOIN ecom7_customer_sample sample
+    ON sample.customer_id = attachment.customer_id
+WHERE attachment.file IS NOT NULL
+    AND attachment.file <> ''
+ORDER BY entity_key, media_path"
+else
+  printf 'customer_attachment\tcustomer\tN/A\t\tCUSTOMER_ATTACHMENT_TABLE_MISSING\n' >> "$output_file"
+fi
+
+{
+  printf 'media_family\trows\n'
+  awk -F '\t' 'NR > 1 { count[$1]++ } END { for (family in count) print family "\t" count[family] }' "$output_file" \
+    | sort
+} > "$summary_file"
+
+printf 'source_media_paths=%s\n' "$output_file"
+printf 'summary=%s\n' "$summary_file"

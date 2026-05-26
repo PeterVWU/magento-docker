@@ -23,7 +23,14 @@ locals {
     "magento-stg-composer-auth-json",
   ])
 
-  opensearch_admin_secret_id = "magento-stg-opensearch-admin-password"
+  opensearch_admin_secret_id  = "magento-stg-opensearch-admin-password"
+  media_hmac_key_secret_id    = "magento-stg-media-hmac-key"
+  media_hmac_secret_secret_id = "magento-stg-media-hmac-secret"
+
+  media_hmac_secret_ids = toset([
+    local.media_hmac_key_secret_id,
+    local.media_hmac_secret_secret_id,
+  ])
 
   opensearch_secret_ids = toset([
     local.opensearch_admin_secret_id,

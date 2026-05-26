@@ -29,6 +29,9 @@ write_env_php() {
   fi
 
   php -r '
+  $mediaBucket = getenv("MAGENTO_MEDIA_BUCKET") ?: "";
+  $mediaHmacKey = getenv("MAGENTO_MEDIA_HMAC_KEY") ?: "";
+  $mediaHmacSecret = getenv("MAGENTO_MEDIA_HMAC_SECRET") ?: "";
   $env = [
       "backend" => ["frontName" => getenv("MAGENTO_BACKEND_FRONT_NAME") ?: "admin"],
       "crypt" => ["key" => getenv("MAGENTO_CRYPT_KEY")],
@@ -114,6 +117,28 @@ write_env_php() {
       ],
       "directories" => ["document_root_is_pub" => true],
   ];
+
+  if ($mediaBucket !== "") {
+      $mediaPrefix = getenv("MAGENTO_MEDIA_PREFIX");
+      $env["remote_storage"] = [
+          "driver" => getenv("MAGENTO_MEDIA_DRIVER") ?: "gcs-s3",
+          "prefix" => $mediaPrefix === false ? "media" : $mediaPrefix,
+          "config" => [
+              "endpoint" => getenv("MAGENTO_MEDIA_ENDPOINT") ?: "https://storage.googleapis.com",
+              "bucket" => $mediaBucket,
+              "region" => getenv("MAGENTO_MEDIA_REGION") ?: "auto",
+              "path-style" => getenv("MAGENTO_MEDIA_PATH_STYLE") ?: "1",
+          ],
+      ];
+
+      if ($mediaHmacKey !== "" || $mediaHmacSecret !== "") {
+          $env["remote_storage"]["config"]["credentials"] = [
+              "key" => $mediaHmacKey,
+              "secret" => $mediaHmacSecret,
+          ];
+      }
+  }
+
   file_put_contents("app/etc/env.php", "<?php\nreturn " . var_export($env, true) . ";\n");
   '
   chmod 0640 app/etc/env.php

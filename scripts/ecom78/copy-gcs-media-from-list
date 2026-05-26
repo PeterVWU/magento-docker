@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'USAGE'
+Usage:
+  scripts/ecom78/copy-gcs-media-from-list PATH_LIST SOURCE_GCS_ROOT TARGET_GCS_ROOT [REPORT_DIR]
+
+Example:
+  CLOUDSDK_CONFIG=/tmp/gcloud-vwu \
+    scripts/ecom78/copy-gcs-media-from-list \
+      var/import/production-derived/ecom78-media/gcs-required-paths.txt \
+      gs://media-m5844/media \
+      gs://vwu-magento-stg-media/media
+
+PATH_LIST contains paths relative to legacy pub/media, one per line.
+SOURCE_GCS_ROOT and TARGET_GCS_ROOT must be GCS prefixes without a trailing file.
+Set ECOM78_PARALLELISM to control concurrent object copies. Default: 8.
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -lt 3 || $# -gt 4 ]]; then
+  usage
+  exit 64
+fi
+
+path_list="$1"
+source_root="${2%/}"
+target_root="${3%/}"
+report_dir="${4:-$(dirname "$path_list")}"
+
+if [[ ! -r "$path_list" ]]; then
+  printf 'Path list is not readable: %s\n' "$path_list" >&2
+  exit 66
+fi
+
+if [[ "$source_root" != gs://* || "$target_root" != gs://* ]]; then
+  printf 'Source and target roots must both start with gs://\n' >&2
+  exit 64
+fi
+
+mkdir -p "$report_dir"
+
+copied_report="$report_dir/gcs-copy-copied.tsv"
+missing_report="$report_dir/gcs-copy-missing.tsv"
+failed_report="$report_dir/gcs-copy-failed.tsv"
+
+printf 'media_path\tsource\ttarget\n' > "$copied_report"
+printf 'media_path\tsource\treason\n' > "$missing_report"
+printf 'media_path\tsource\ttarget\treason\n' > "$failed_report"
+
+total=0
+missing=0
+parallelism="${ECOM78_PARALLELISM:-8}"
+
+if ! [[ "$parallelism" =~ ^[1-9][0-9]*$ ]]; then
+  printf 'ECOM78_PARALLELISM must be a positive integer.\n' >&2
+  exit 64
+fi
+
+worker_script="$report_dir/.gcs-copy-worker.sh"
+cat > "$worker_script" <<'WORKER'
+#!/usr/bin/env bash
+set -euo pipefail
+
+media_path="$1"
+source_root="$2"
+target_root="$3"
+copied_report="$4"
+missing_report="$5"
+failed_report="$6"
+
+source_uri="$source_root/$media_path"
+target_uri="$target_root/$media_path"
+
+if ! gcloud --quiet storage objects describe "$source_uri" >/dev/null 2>&1; then
+  printf '%s\t%s\tnot-found\n' "$media_path" "$source_uri" >> "$missing_report"
+  exit 0
+fi
+
+if gcloud --quiet storage cp "$source_uri" "$target_uri" >/dev/null 2>&1; then
+  printf '%s\t%s\t%s\n' "$media_path" "$source_uri" "$target_uri" >> "$copied_report"
+else
+  printf '%s\t%s\t%s\tcopy-failed\n' "$media_path" "$source_uri" "$target_uri" >> "$failed_report"
+fi
+WORKER
+chmod +x "$worker_script"
+
+task_list="$report_dir/.gcs-copy-paths.nul"
+printf '' > "$task_list"
+
+while IFS= read -r media_path || [[ -n "$media_path" ]]; do
+  media_path="${media_path//$'\r'/}"
+  media_path="${media_path#./}"
+  media_path="${media_path#/}"
+
+  [[ -z "$media_path" ]] && continue
+
+  if [[ "$media_path" == *'..'* || "$media_path" == /* ]]; then
+    printf '%s\t%s\tunsafe-path\n' "$media_path" "$source_root/$media_path" >> "$missing_report"
+    missing=$((missing + 1))
+    continue
+  fi
+
+  total=$((total + 1))
+  printf '%s\0' "$media_path" >> "$task_list"
+done < "$path_list"
+
+if [[ -s "$task_list" ]]; then
+  xargs -0 -I '{}' -P "$parallelism" "$worker_script" \
+    '{}' "$source_root" "$target_root" "$copied_report" "$missing_report" "$failed_report" \
+    < "$task_list"
+fi
+
+copied=$(( $(wc -l < "$copied_report") - 1 ))
+missing=$(( $(wc -l < "$missing_report") - 1 ))
+failed=$(( $(wc -l < "$failed_report") - 1 ))
+
+rm -f "$worker_script" "$task_list"
+
+printf 'total=%s\n' "$total"
+printf 'copied=%s\n' "$copied"
+printf 'missing=%s\n' "$missing"
+printf 'failed=%s\n' "$failed"
+printf 'copied_report=%s\n' "$copied_report"
+printf 'missing_report=%s\n' "$missing_report"
+printf 'failed_report=%s\n' "$failed_report"

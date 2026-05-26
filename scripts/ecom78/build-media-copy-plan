@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+usage() {
+  cat >&2 <<'USAGE'
+Usage:
+  scripts/ecom78/build-media-copy-plan MEDIA_PATHS_TSV SOURCE_MEDIA_ROOT [OUTPUT_DIR]
+
+MEDIA_PATHS_TSV must be a tab-separated export with at least these columns:
+  media_family  entity_kind  entity_key  media_path
+
+SOURCE_MEDIA_ROOT is the directory corresponding to legacy pub/media.
+OUTPUT_DIR defaults to var/import/production-derived/ecom78-media.
+
+The script does not copy files. It creates:
+  media-manifest.tsv
+  copy-list.txt
+  missing-media.tsv
+
+Use copy-list.txt as rsync --files-from input after reviewing the manifest.
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -lt 2 || $# -gt 3 ]]; then
+  usage
+  exit 64
+fi
+
+input_tsv="$1"
+source_media_root="${2%/}"
+output_dir="${3:-$repo_root/var/import/production-derived/ecom78-media}"
+
+if [[ ! -r "$input_tsv" ]]; then
+  printf 'Input TSV is not readable: %s\n' "$input_tsv" >&2
+  exit 66
+fi
+
+if [[ ! -d "$source_media_root" ]]; then
+  printf 'Source media root is not a directory: %s\n' "$source_media_root" >&2
+  exit 66
+fi
+
+mkdir -p "$output_dir"
+
+manifest="$output_dir/media-manifest.tsv"
+copy_list="$output_dir/copy-list.txt"
+missing="$output_dir/missing-media.tsv"
+
+printf 'media_family\tentity_kind\tentity_key\tmedia_path\tstatus\tsize_bytes\n' > "$manifest"
+printf '' > "$copy_list"
+printf 'media_family\tentity_kind\tentity_key\tmedia_path\treason\n' > "$missing"
+
+normalize_media_path() {
+  local path="$1"
+
+  path="${path//$'\r'/}"
+  path="${path#\"}"
+  path="${path%\"}"
+  path="${path#./}"
+  path="${path#/}"
+  path="${path#pub/media/}"
+  path="${path#media/}"
+  path="${path#/}"
+
+  printf '%s' "$path"
+}
+
+line_number=0
+found_count=0
+missing_count=0
+
+while IFS=$'\t' read -r media_family entity_kind entity_key media_path _rest; do
+  line_number=$((line_number + 1))
+
+  if [[ $line_number -eq 1 && "$media_path" == "media_path" ]]; then
+    continue
+  fi
+
+  normalized_path="$(normalize_media_path "$media_path")"
+
+  if [[ -z "$normalized_path" ]]; then
+    printf '%s\t%s\t%s\t%s\tempty-path\n' \
+      "$media_family" "$entity_kind" "$entity_key" "$media_path" >> "$missing"
+    missing_count=$((missing_count + 1))
+    continue
+  fi
+
+  if [[ "$normalized_path" == *'..'* || "$normalized_path" == /* ]]; then
+    printf '%s\t%s\t%s\t%s\tunsafe-path\n' \
+      "$media_family" "$entity_kind" "$entity_key" "$media_path" >> "$missing"
+    missing_count=$((missing_count + 1))
+    continue
+  fi
+
+  absolute_path="$source_media_root/$normalized_path"
+  if [[ -f "$absolute_path" ]]; then
+    size_bytes="$(wc -c < "$absolute_path" | tr -d '[:space:]')"
+    printf '%s\t%s\t%s\t%s\tfound\t%s\n' \
+      "$media_family" "$entity_kind" "$entity_key" "$normalized_path" "$size_bytes" >> "$manifest"
+    printf '%s\n' "$normalized_path" >> "$copy_list"
+    found_count=$((found_count + 1))
+  else
+    printf '%s\t%s\t%s\t%s\tmissing\t0\n' \
+      "$media_family" "$entity_kind" "$entity_key" "$normalized_path" >> "$manifest"
+    printf '%s\t%s\t%s\t%s\tnot-found\n' \
+      "$media_family" "$entity_kind" "$entity_key" "$normalized_path" >> "$missing"
+    missing_count=$((missing_count + 1))
+  fi
+done < "$input_tsv"
+
+sort -u "$copy_list" -o "$copy_list"
+
+printf 'manifest=%s\n' "$manifest"
+printf 'copy_list=%s\n' "$copy_list"
+printf 'missing=%s\n' "$missing"
+printf 'found=%s\n' "$found_count"
+printf 'missing=%s\n' "$missing_count"
