@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+        <section id="vusa_rootways" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Rootways</label>
+            <tab>vapewholesaleusa</tab>
+            <resource>Rootways_Authorizecim::config_authorizecim</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1">
+                <label>General Configuration</label>
+                <field id="years_range" translate="label" type="text" showInDefault="1">
+                    <label>Years Range</label>
+                    <comment>Enter the number of years to display (e.g., 10, 20). Default is 12</comment>
+                    <validate>required-entry validate-digits validate-digits-range-1-100</validate>
+                </field>
+            </group>
+        </section>
+	</system>
+</config>

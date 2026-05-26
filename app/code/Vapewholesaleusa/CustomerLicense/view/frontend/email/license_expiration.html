@@ -1,0 +1,21 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<!--@subject {{trans "%license Expiration Notice" license=$license}} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+        <td>
+            <h3>{{trans "Dear %store_name Customer," store_name=$store.frontend_name}}</h3>
+            <p>{{trans "Your %license will expire on %expire" license=$license expire=$customer_data.expire_date}}</p>
+            <p>{{trans "Customer ID: %customer_id" customer_id=$customer_data.customer_id}}</p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

@@ -6,8 +6,8 @@ Rehearse a selective migration from the legacy Magento estate into the fresh
 `magento-modern` project before staging is treated as production-like.
 
 This phase proves the data path locally first. It does not provision managed
-services, replace ECOM-55 module rewrite work, or copy raw production dumps into
-this repository.
+services, replace retained module/rewrite decisions, or copy raw production
+dumps into this repository.
 
 ## Inputs and Dependencies
 
@@ -16,11 +16,11 @@ this repository.
 | Kept module/package decisions | [ECOM-20 module keep matrix](../ecom-20/module-keep-matrix.md) |
 | Runtime and media target architecture | [Runtime contract](../architecture/runtime-contract.md) |
 | GCS media adapter behavior already validated locally | [ECOM-60 GCS adapter validation](../ecom-60/gcs-media-adapter-validation.md) |
-| Critical custom module rewrite decisions | ECOM-55, which blocks final ECOM-7 completion |
+| Extension-backed migration pass | ECOM-77, after target module/schema decisions are available |
 
-ECOM-7 can start before ECOM-55 is complete, but the final rehearsal dataset and
-the final extension-data import list cannot be frozen until ECOM-55 resolves the
-business-critical custom module surface.
+ECOM-7 can complete the core-only rehearsal before retained extension modules
+exist. Extension-backed data moves in the ECOM-77 follow-up pass once each
+retained feature has an approved target schema.
 
 ## Rehearsal Principles
 
@@ -70,7 +70,7 @@ be described as such.
 | Products | Configurable and simple products, attributes, categories, prices, stock, product media relationships. |
 | Customers | Customer groups, B2B/customer attributes, addresses, license-related data, and required account fields after sanitization. |
 | Orders | Order headers, items, invoices, shipments, payments, status history, and retained custom order fields. |
-| Extension data | Only retained business-critical data confirmed by ECOM-20 and ECOM-55, such as store credit, rewards, sales rep, order source, tax rules, customer licenses, and payment request data where still required. |
+| Extension data | Only retained business-critical data confirmed by ECOM-20 and the ECOM-77 target-schema pass, such as store credit, rewards, sales rep, order source, tax rules, customer licenses, and payment request data where still required. |
 | Media | Product, category, and customer-license media required by migrated records. |
 
 ### Rebuild or Exclude
@@ -94,7 +94,7 @@ enough to expose real migration risk:
 | Catalog | 10 configurable products with children, mixed attribute sets, categories, stock states, and product images. |
 | Customers | 25 customers across the required customer groups, including B2B/customer attributes and sanitized addresses. |
 | Orders | 50 orders spanning completed, processing, canceled, refunded, invoiced, and shipped states. |
-| Extension data | At least one retained example per extension-data family that survives ECOM-20/ECOM-55. |
+| Extension data | At least one retained example per extension-data family that survives ECOM-20 and the ECOM-77 target-schema pass. |
 | Media | Product images, category media, and at least one customer-license media path if that feature survives. |
 
 If the first slice cannot represent a required domain without unsafe data, record
@@ -202,8 +202,8 @@ first extraction list. The list is intentionally split into:
 
 ## Rehearsal Flow
 
-1. Confirm the module/data scope against ECOM-20 and the current ECOM-55
-   decisions.
+1. Confirm the module/data scope against ECOM-20 and the current ECOM-77
+   target-schema decisions.
 2. Prepare a sanitized source slice outside Git.
 3. Fill in `manifest.csv` from the committed template.
 4. Export source data by domain.
@@ -255,7 +255,7 @@ first extraction list. The list is intentionally split into:
 ## Open Decisions Before Automation
 
 - Which sanitized export format is the source of truth for each domain.
-- Which ECOM-55 rewrite candidates still require legacy data migration.
+- Which ECOM-77 retained/replaced features still require legacy data migration.
 - Which retained third-party modules expose their own supported import path
   versus requiring SQL-level migration or replacement logic, especially the
   exact production tables used by store credit and rewards.

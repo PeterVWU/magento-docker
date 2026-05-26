@@ -1,0 +1,284 @@
+<?php
+/** @var \Rootways\Authorizecim\Block\Cards\Edit $block */
+/** @var \Magento\Framework\Escaper $escaper */
+?>
+<?php
+$card = $block->getTokenData();
+$expDate = explode('/', $card['ccd']);
+$billingAddress = isset($card['ccdetails']['paymentProfile']['billTo']) ? $card['ccdetails']['paymentProfile']['billTo'] : null;
+$_displayAll = $block->getConfig('general/region/display_all');
+?>
+<form class="saved-card-form"
+      action="<?php echo $block->getEditCardUrl() ?>"
+      id="save-cc-form"
+      method="post"
+      data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
+      data-mage-init='{"validation":{}}'>
+
+    <fieldset class="fieldset">
+        <legend class="legend"><span><?= $block->escapeHtml(__('Card Number Information')) ?></span></legend><br />
+        <div class="field note no-label">
+            <?= $block->escapeHtml(__('This card information will be saved to the payment gateway server not to the website so it is secure and safe.')) ?>
+        </div>
+
+        <div class="field card_type">
+            <label class="label" for="card_type">
+                <span><?= $block->escapeHtml(__('Credit Card Type')) ?></span>
+             </label>
+            <div class="control">
+                <select id="card_type"
+                        name="card_type"
+                        class="select"
+                        data-validate='{"validate-cc-type-select":"#number"}'>
+                    <option value=""><?= $block->escapeHtml(__('--Please Select--')) ?></option>
+                    <?php foreach ($block->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
+                        <option value="<?= $block->escapeHtmlAttr($_typeCode) ?>" <?php if ($card['cct'] == $_typeCode): ?>selected="selected"<?php endif; ?>>
+                            <?= $block->escapeHtml($_typeName) ?>
+                        </option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+        </div>
+
+         <div class="field number">
+             <label class="label" for="number">
+                <span><?= $block->escapeHtml(__('Credit Card Number')) ?></span>
+             </label>
+             <div class="control">
+                <input type="number"
+                       name="number"
+                       value=""
+                       placeholder="<?= $block->escapeHtml('XXXX-XXXX-XXXX-' . $card['ccn']) ?>"
+                       title="<?= $block->escapeHtml(__('Credit Card Number')) ?>"
+                       id="number"
+                       class="input-text"
+                       data-validate='{"required-number":true, "validate-cc-number":"#card_type", "validate-cc-type":"#card_type"}'>
+             </div>
+        </div>
+
+        <div class="field expiration-date">
+            <label class="label" for="number">
+                <span><?= $block->escapeHtml(__('Expiration Date')) ?></span>
+            </label>
+            <div class="control">
+                <div class="exp-date">
+                    <?php $_ccExpMonth = sprintf('%d', $expDate[0]);?>
+                    <select id="expiry_month"
+                            data-validate="{required:true, 'validate-cc-exp':'#expiry_year'}"
+                            name="expiry_month"
+                            class="month validate-cc-exp required-entry "
+                            style="width: 150px; margin-right: 10px;">
+                        <?php foreach ($block->getCcMonths() as $k => $v): ?>
+                            <option value="<?php echo $k?$k:'' ?>"<?php if ($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>>
+                                <?= $block->escapeHtml($v) ?>
+                            </option>
+                        <?php endforeach ?>
+                    </select>
+                </div>
+                <div class="exp-date">
+                    <?php $_ccExpYear = $expDate[1]; ?>
+                    <select id="expiry_year"
+                            name="expiry_year"
+                            class="year required-entry "
+                            style="width: 150px;">
+                        <?php foreach ($block->getCcYears() as $k => $v): ?>
+                            <option value="<?php echo $k?$k:'' ?>"<?php if ($k==$_ccExpYear): ?> selected="selected"<?php endif ?>>
+                                <?= $block->escapeHtml($v) ?>
+                            </option>
+                        <?php endforeach ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field cvv_number display-none">
+            <label class="label" for="cvv_number">
+                <span><?= $block->escapeHtml(__('Card Verification Number')) ?></span>
+             </label>
+            <div class="control">
+                <input name="cvv_number"
+                       id="cvv_number"
+                       title="<?= $block->escapeHtmlAttr(__('Card Verification Number')) ?>"
+                       value=""
+                       class="input-text"
+                       type="text"
+                       data-validate='{"required-number":true}' />
+            </div>
+        </div>
+    </fieldset>
+
+    <?php if ($billingAddress != null) { ?>
+        <?php
+        $regionCode = $billingAddress['state'];
+        $regionId = $block->getRegionIdByCode($regionCode, $billingAddress['country']);
+        $stateId = $regionCode;
+        if ($regionId != '') {
+            $stateId = $regionId;
+        } ?>
+        <fieldset class="fieldset">
+            <legend class="legend"><span><?= $block->escapeHtml(__('Billing Address Information')) ?></span></legend><br />
+
+            <div class="field firstName required">
+                <label class="label" for="firstName"><span><?= $block->escapeHtml(__('First Name')) ?></span></label>
+                <div class="control">
+                    <input name="firstName"
+                           id="firstName"
+                           minlength="2"
+                           maxlength="50"
+                           title="<?= $block->escapeHtmlAttr(__('First Name')) ?>"
+                           value="<?= $block->escapeHtmlAttr($billingAddress['firstName']) ?>"
+                           class="input-text"
+                           type="text"
+                           data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field lastName required">
+                <label class="label" for="lastName"><span><?= $block->escapeHtml(__('Last Name')) ?></span></label>
+                <div class="control">
+                    <input name="lastName"
+                           id="lastName"
+                           minlength="2"
+                           maxlength="50"
+                           title="<?= $block->escapeHtmlAttr(__('Last Name')) ?>"
+                           value="<?= $block->escapeHtmlAttr($billingAddress['lastName']) ?>"
+                           class="input-text"
+                           type="text"
+                           data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field address1 required">
+                <label class="label" for="address"><span><?= $block->escapeHtml(__('Street Address')) ?></span></label>
+                <div class="control">
+                    <input name="address"
+                           id="address"
+                           title="<?= $block->escapeHtmlAttr(__('Street Address')) ?>"
+                           value="<?= $block->escapeHtmlAttr($billingAddress['address']) ?>"
+                           class="input-text"
+                           type="text"
+                           maxlength="60"
+                           data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field city required">
+                <label class="label" for="city"><span><?= $block->escapeHtml(__('City')) ?></span></label>
+                <div class="control">
+                    <input name="city"
+                           id="city"
+                           title="<?= $block->escapeHtmlAttr(__('City')) ?>"
+                           value="<?= $block->escapeHtmlAttr($billingAddress['city']) ?>"
+                           class="input-text"
+                           type="text"
+                           maxlength="40"
+                           data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field region required">
+                <label class="label" for="region_id">
+                    <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?></span>
+                </label>
+                <div class="control">
+                    <select id="region_id" name="region_id"
+                            title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
+                            class="validate-select region_id"
+                            <?= /* @noEscape */ !$_displayAll ? ' disabled="disabled"' : '' ?>>
+                        <option value=""><?= $block->escapeHtml(__('Please select a region, state or province.')) ?></option>
+                    </select>
+                    <input type="text"
+                           id="region"
+                           name="region"
+                           value="<?php echo (string)$stateId ?>"
+                           title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
+                           maxlength="40"
+                           class="input-text validate-not-number-first
+                           <?= $block->escapeHtmlAttr($this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('region')) ?>"
+                           <?= !$_displayAll ? ' disabled="disabled"' : '' ?>/>
+                </div>
+            </div>
+
+            <div class="field country required">
+                <label class="label" for="country"><span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('country_id') ?></span></label>
+                <div class="control">
+                    <?= $block->getCountryHtmlSelect((string)$billingAddress['country']) ?>
+                </div>
+            </div>
+
+            <div class="field zip required">
+                <label class="label" for="zip">
+                    <span><?= $block->escapeHtml(__('Postal Code')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="text"
+                           name="postcode"
+                           value="<?= $block->escapeHtmlAttr($billingAddress['zip']) ?>"
+                           title="<?= $block->escapeHtmlAttr(__('Postal Code')) ?>"
+                           id="zip"
+                           maxlength="20"
+                           class="input-text validate-zip-international
+                            <?= $block->escapeHtmlAttr($this->helper(\Magento\Customer\Helper\Address::class)
+                               ->getAttributeValidationClass('postcode')) ?>">
+                    <div role="alert" class="message warning" style="display:none">
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field phone_number required">
+                <label class="label" for="phone_number"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+                <div class="control">
+                    <input name="phone_number"
+                           id="phone_number"
+                           minlength="7"
+                           maxlength="25"
+                           title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>"
+                           value="<?= $block->escapeHtmlAttr($billingAddress['phoneNumber']) ?>"
+                           class="input-text"
+                           type="text"
+                           data-validate="{required:true, 'validate-number':true}"/>
+                </div>
+            </div>
+
+        </fieldset>
+    <?php } ?>
+
+    <div class="actions-toolbar">
+        <div class="primary">
+            <input type="hidden" name="ccgt" id="ccgt" value="<?= $block->escapeHtmlAttr($card['ccgt']) ?>" />
+            <input type="hidden" name="public_hash" id="ccgt" value="<?= $block->escapeHtmlAttr($card['public_hash']) ?>" />
+            <input type="hidden" name="ccpid" id="ccpid" value="<?= $block->escapeHtmlAttr($card['ccpid']) ?>" />
+            <button type="submit"
+                    class="action submit primary"
+                    title="<?= $block->escapeHtmlAttr(__('Submit')) ?>">
+                <span><?= $block->escapeHtml(__('Submit')) ?></span>
+            </button>
+        </div>
+    </div>
+</form>
+
+<script type="text/x-magento-init">
+    {
+        "#save-cc-form": {
+            "addressValidation": {
+                "postCodes": <?= /* @noEscape */ $block->getPostCodeConfig()->getSerializedPostCodes(); ?>
+            }
+        },
+        "#country": {
+            "regionUpdater": {
+                "optionalRegionAllowed": <?= /* @noEscape */ $_displayAll ? 'true' : 'false' ?>,
+                "regionListId": "#region_id",
+                "regionInputId": "#region",
+                "postcodeId": "#zip",
+                "form": "#save-cc-form",
+                "regionJson":
+                <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>,
+                "defaultRegion": "<?php /* @noEscape */ echo $regionId == '' ? 0 : $regionId; ?>",
+                "countriesWithOptionalZip":
+                <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)
+                                        ->getCountriesWithOptionalZip(true) ?>
+            }
+        }
+    }
+</script>

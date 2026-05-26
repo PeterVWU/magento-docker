@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\CatalogInventory\Model\StockRegistry">
+        <plugin name="stock_update_plugin_rest"
+                type="Vapewholesaleusa\OrderSource\Plugin\UpdateStockPlugin"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Sales\Model\OrderRepository">
+        <plugin name="order_repository_get_after_plugin_rest"
+                type="Vapewholesaleusa\OrderSource\Plugin\OrderRepositoryGetAfterPlugin"
+                sortOrder="1"/>
+        <plugin name="order_repository_order_list_get_after_plugin_rest"
+                type="Vapewholesaleusa\OrderSource\Plugin\OrderRepositoryGetListAfterPlugin"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Sales\Model\Order\ShipmentDocumentFactory">
+        <plugin name="shipment_creation_after_api_rest"
+                type="Vapewholesaleusa\OrderSource\Plugin\ShipmentCreationAfterApi"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\CatalogInventory\Model\StockRegistryProvider">
+        <plugin name="get_stock_item_before_plugin_rest"
+                type="Vapewholesaleusa\OrderSource\Plugin\GetStockItemAfterPlugin"
+                sortOrder="1"/>
+    </type>
+</config>

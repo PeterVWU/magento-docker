@@ -1,0 +1,40 @@
+<!--
+/**
+ * Copyright © Vapewholesaleusa, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<!--@subject {{trans "You have %reward_point_amount Reward Point!" reward_point_amount=$reward_point_amount}} @-->
+<!--@vars {
+"var customer_name":"Customer Name",
+"var reward_point_amount":"Reward Point Amount",
+"var store.frontend_name":"Store Frontend Name",
+"var store_email":"Store Email",
+"var store_phone":"Store Phone",
+"var store_hours":"Store Hours",
+"var this.getUrl($store,'customer/account/',[_nosid:1]): 'My Account URL'"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr>
+        <td>
+            <p class="greeting">{{trans "Hello %customer_name," customer_name=$customer_name}}</p>
+            <p>{{trans "We are excited to inform you that you have reward point available at %store_name!" store_name=$store.frontend_name}}</p>
+            <p>{{trans "Reward Point Amount: <strong>%amount</strong>" amount=$reward_point_amount |raw}}</p>
+            <p>{{trans 'You can use this point towards your next purchase. Don’t miss out!'}}</p>
+            <p>
+                {{trans 'You can view your reward point balance and more details in <a href="%account_url">My Account</a>.' account_url=$this.getUrl($store,'customer/account/',[_nosid:1]) |raw}}
+            </p>
+            <p>
+                {{trans 'If you have any questions, please feel free to contact us at <a href="mailto:%store_email">%store_email</a>' store_email=$store_email |raw}}{{depend store_phone}} {{trans 'or call us at <a href="tel:%store_phone">%store_phone</a>' store_phone=$store_phone |raw}}{{/depend}}.
+                {{depend store_hours}}
+                {{trans 'Our hours are <span class="no-link">%store_hours</span>.' store_hours=$store_hours |raw}}
+                {{/depend}}
+            </p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

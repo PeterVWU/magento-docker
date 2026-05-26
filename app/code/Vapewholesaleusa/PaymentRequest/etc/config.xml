@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <vusa_payment_request>
+            <general>
+                <enabled>1</enabled>
+                <style_color>#4A90E2</style_color>
+                <merchant_name>Vape Wholesale Distribution USA</merchant_name>
+            </general>
+            <email>
+                <enabled>1</enabled>
+                <template>vusa_payment_request_email_template</template>
+                <guest_template>vusa_payment_request_email_guest_template</guest_template>
+                <identity>sales</identity>
+                <copy_method>bcc</copy_method>
+            </email>
+        </vusa_payment_request>
+        <payment>
+            <mageworx_ordereditor_payment_method>
+                <can_capture_partial>1</can_capture_partial>
+            </mageworx_ordereditor_payment_method>
+        </payment>
+    </default>
+</config>

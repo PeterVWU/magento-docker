@@ -1,0 +1,23 @@
+{
+    "vapewholesaleusa_ordersource_ordersource": {
+        "column": {
+            "entity_id": true,
+            "order_id": true,
+            "sku": true,
+            "source_code": true,
+            "qty": true,
+            "order_inc_id": true,
+            "item_id": true,
+            "qty_shipped": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constaint": {
+            "PRIMARY": true
+        },
+        "search": {
+            "VAPEWHOLESALEUSA_ORDERSOURCE_ORDERSOURCE_ENTITY_ID": true
+        }
+    }
+}

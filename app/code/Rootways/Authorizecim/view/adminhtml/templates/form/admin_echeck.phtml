@@ -1,0 +1,62 @@
+<?php
+/**
+ * @var \Magento\Payment\Block\Adminhtml\Transparent\Form $block
+ */
+$code = $block->escapeHtml($block->getMethodCode());
+$ccExpMonth = $block->getInfoData('cc_exp_month');
+$ccExpYear = $block->getInfoData('cc_exp_year');
+?>
+<fieldset class="admin__fieldset payment-method" id="payment_form_<?= /* @noEscape */ $code ?>"
+          style="display:none">
+
+    <div class="field-number admin__field _required">
+        <label class="admin__field-label" for="<?= /* @noEscape */ $code ?>_name_on_account">
+            <span><?= $block->escapeHtml(__('Name  On Account')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <input type="text" id="<?= /* @noEscape */ $code ?>_name_on_account" name="payment[name_on_account]"
+                   title="<?= $block->escapeHtmlAttr(__('Name  On Account')) ?>" class="admin__control-text required-entry"
+                   value="<?= /* @noEscape */ $block->getInfoData('name_on_account') ?>"/>
+        </div>
+    </div>
+
+    <div class="field-type admin__field _required">
+        <label class="admin__field-label" for="<?= /* @noEscape */ $code ?>_account_type">
+            <span><?= $block->escapeHtml(__('Account Type')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <select id="<?= /* @noEscape */ $code ?>_account_type" name="payment[account_type]"
+                    class="required-entry admin__control-select">
+                <option value=""></option>
+                <?php foreach ($block->eCheckAccountTypes() as $typeCode => $typeName): ?>
+                    <option value="<?= $block->escapeHtmlAttr($typeCode) ?>">
+                        <?= $block->escapeHtml($typeName) ?>
+                    </option>
+                <?php endforeach ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="field-number admin__field _required">
+        <label class="admin__field-label" for="<?= /* @noEscape */ $code ?>_account_number">
+            <span><?= $block->escapeHtml(__('Account Number')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <input type="text" id="<?= /* @noEscape */ $code ?>_account_number" name="payment[account_number]"
+                   title="<?= $block->escapeHtmlAttr(__('Account Number')) ?>" class="admin__control-text required-entry"
+                   value="<?= /* @noEscape */ $block->getInfoData('account_number') ?>"/>
+        </div>
+    </div>
+
+    <div class="field-number admin__field _required">
+        <label class="admin__field-label" for="<?= /* @noEscape */ $code ?>_routing_number">
+            <span><?= $block->escapeHtml(__('Routing Number')) ?></span>
+        </label>
+        <div class="admin__field-control">
+            <input type="text" id="<?= /* @noEscape */ $code ?>_routing_number" name="payment[routing_number]"
+                   title="<?= $block->escapeHtmlAttr(__('Routing Number')) ?>" class="admin__control-text required-entry"
+                   value="<?= /* @noEscape */ $block->getInfoData('routing_number') ?>"/>
+        </div>
+    </div>
+
+</fieldset>

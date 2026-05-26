@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="payment_method_assign_data_rootways_authorizecim_option">
+        <observer name="rootways_authorizecim_gateway_data_assign"
+                  instance="Rootways\Authorizecim\Observer\DataAssignObserver" />
+    </event>
+    <event name="payment_method_assign_data_rootways_authorizecim_echeck">
+        <observer name="rootways_authorizecim_echeck_data_assign"
+                  instance="Rootways\Authorizecim\Observer\EcheckDataAssignObserver" />
+    </event>
+    <event name="payment_method_assign_data_rootways_authorizecim_option_googlepay">
+        <observer name="rootways_authorizecim_googlepay_gateway_data_assign"
+                  instance="Rootways\Authorizecim\Observer\GooglePayDataAssignObserver" />
+    </event>
+    <event name="payment_method_assign_data_rootways_authorizecim_option_visa">
+        <observer name="rootways_authorizecim_visacheckout_gateway_data_assign"
+                  instance="Rootways\Authorizecim\Observer\VisaCheckoutDataAssignObserver" />
+    </event>
+</config>

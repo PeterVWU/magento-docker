@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Sales\Controller\Adminhtml\Order\Invoice\Save" type="Vapewholesaleusa\PaymentRequest\Controller\Adminhtml\Order\Invoice\Save" />
+    <type name="Magento\Backend\Block\Widget\Button\ToolbarInterface">
+        <plugin name="payment_request_button_toolbar" type="Vapewholesaleusa\PaymentRequest\Plugin\Button\ToolbarPlugin"/>
+    </type>
+    <virtualType name="Vapewholesaleusa\PaymentRequest\Plugin\Button\ToolbarPlugin\DataProvider" type="Vapewholesaleusa\PaymentRequest\Ui\Component\Button\DataProvider">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item name="label" xsi:type="string" translatable="true">Payment Request</item>
+                <item name="class" xsi:type="string">action-default scalable payment-request</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Vapewholesaleusa\PaymentRequest\Plugin\Button\ToolbarPlugin">
+        <arguments>
+            <argument name="dataProvider" xsi:type="object">Vapewholesaleusa\PaymentRequest\Plugin\Button\ToolbarPlugin\DataProvider</argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="rootways_authorizecim_option" xsi:type="const">Rootways\Authorizecim\Model\SampleConfigProvider::CODE</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="rootways_authorizecim_config_provider" xsi:type="object">Rootways\Authorizecim\Model\SampleConfigProvider</item>
+                <item name="rootways_authorize_echeck_config_provider" xsi:type="object">Rootways\Authorizecim\Model\EcheckConfigProvider</item>
+                <item name="rootways_authorizehosted_config_provider" xsi:type="object">Rootways\Authorizecim\Model\HostedPaymentConfigProvider</item>
+                <item name="rootways_authorize_visa_config_provider" xsi:type="object">Rootways\Authorizecim\Model\VisaPaymentConfigProvider</item>
+                <item name="rootways_authorizecim_googlepay_config_provider" xsi:type="object">Rootways\Authorizecim\Model\GooglePayConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Vault\Model\Ui\TokensConfigProvider">
+        <arguments>
+            <argument name="tokenUiComponentProviders" xsi:type="array">
+                <item name="rootways_authorizecim_option" xsi:type="object">Rootways\Authorizecim\Model\TokenUiComponentProvider</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

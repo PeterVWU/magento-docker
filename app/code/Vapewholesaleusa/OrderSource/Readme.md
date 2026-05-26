@@ -1,0 +1,1 @@
+VUS-308 : This module provides to assign a source to a user or an itegrator account. And filters all rest api requests based on this assigned source. Therefore, the user can only see the products qty's of the assigned source.

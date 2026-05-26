@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::content">
+                    <resource id="Vapewholesaleusa_OrderSource::OrderSource" title="OrderSource" translate="title" sortOrder="900">
+                        <resource id="Vapewholesaleusa_OrderSource::OrderSources" title="OrderSources" translate="title">
+                            <resource id="Vapewholesaleusa_OrderSource::OrderSource_save" title="Save" translate="title"/>
+                            <resource id="Vapewholesaleusa_OrderSource::OrderSource_delete" title="Delete" translate="title"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

@@ -1,0 +1,16 @@
+{
+    "name": "vapewholesaleusa/module-customerlicense",
+    "description": "Customer License",
+    "type": "magento2-module",
+    "license": "Proprietary",
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Vapewholesaleusa\\CustomerLicense\\": ""
+        }
+    }
+}

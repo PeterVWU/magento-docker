@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="MageWorx\OrderEditor\Model\InvoiceFinder" type="Vapewholesaleusa\MageWorxOrderEditor\Model\InvoiceFinder"/>
+    <preference for="MageWorx\OrderEditor\Model\Order" type="Vapewholesaleusa\MageWorxOrderEditor\Model\Order"/>
+    <preference for="MageWorx\OrderEditor\Model\Order\SalesProcessor\DeleteAndCreateSalesProcessor" type="Vapewholesaleusa\MageWorxOrderEditor\Model\Order\SalesProcessor\DeleteAndCreateSalesProcessor"/>
+    <preference for="MageWorx\OrderEditor\Model\Order\SalesProcessor\KeepUntouchedSalesProcessor" type="Vapewholesaleusa\MageWorxOrderEditor\Model\Order\SalesProcessor\KeepUntouchedSalesProcessor"/>
+    <preference for="MageWorx\OrderEditor\Model\Edit\Thumbnail" type="Vapewholesaleusa\MageWorxOrderEditor\Model\Edit\Thumbnail"/>
+    <type name="Magento\Sales\Block\Adminhtml\Order\View\Tab\History">
+        <plugin name="vusa_comment_history_editor" type="Vapewholesaleusa\MageWorxOrderEditor\Plugin\Block\Adminhtml\Order\View\Tab\HistoryPlugin" />
+    </type>
+</config>

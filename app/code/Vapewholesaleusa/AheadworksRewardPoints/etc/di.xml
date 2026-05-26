@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Aheadworks\RewardPoints\Model\Config">
+        <plugin name="aw_get_balance_update_action_after_plugin"
+                type="Vapewholesaleusa\AheadworksRewardPoints\Plugin\GetBalancaUpdateActionConfigAfter"
+                sortOrder="1"/>
+    </type>
+    <preference for="Aheadworks\RewardPoints\Controller\Block\Render"
+                type="Vapewholesaleusa\AheadworksRewardPoints\Controller\Block\Render"/>
+</config>

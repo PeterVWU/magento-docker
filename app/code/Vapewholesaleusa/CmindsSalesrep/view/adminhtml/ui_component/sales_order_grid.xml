@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <listingToolbar name="listing_top">
+        <massaction name="listing_massaction">
+            <action name="assign_sales_rep" class="Vapewholesaleusa\CmindsSalesrep\Ui\Component\MassAction\AssignSalesRep" >
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">assign_sales_rep</item>
+                        <item name="label" xsi:type="string" translate="true">Assign Sales Rep</item>
+                        <item name="massActionUrl" xsi:type="string">vusasalesrep/order/MassAssign</item>
+                        <item name="confirm" xsi:type="array">
+                            <item name="title" xsi:type="string" translate="true">Assign Sales Rep</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure you want to assign a Sales Representative to the selected items?</item>
+                        </item>
+                    </item>
+                </argument>
+            </action>
+        </massaction>
+    </listingToolbar>
+</listing>

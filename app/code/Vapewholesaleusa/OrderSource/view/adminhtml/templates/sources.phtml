@@ -1,0 +1,94 @@
+<?php
+/**
+ * @var $block \Vapewholesaleusa\OrderSource\Block\Adminhtml\Order\View\Tab\SourcesTab
+ */
+$sourcesPerSku = $block->sourcesPerSku();
+$sourcesArray = $block->allSources();
+
+if(!$sourcesPerSku):
+    echo '<h3 style="margin-top: 10%;text-align: center;color: red;">No source found for this order.</h3>';
+else:
+?>
+<style>
+    .col-source {
+        display: inline-block;
+        padding: 10px;
+    }
+
+    .input-qty {
+        width: 50px;
+    }
+
+    .sources {
+        display: grid;
+        min-height: 70px;
+    }
+
+    .sku-centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        border: 3px solid green;
+    }
+
+</style>
+<span class="admin__page-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Items Sources')) ?></span>
+    </div>
+    <div class="responsive-table">
+        <table class="admin__table-secondary">
+            <thead>
+            <tr class="headings">
+                <th class="col-sku"><span>SKU</span></th>
+                <th class="col-source"><span>Source - Qty</span></th>
+            </tr>
+            </thead>
+            <tbody id="edit_form">
+            <tr>
+                <?php foreach ($sourcesPerSku as $key => $sources): ?>
+                <th><div class="sku-centered"><?= $key ?></div></th>
+                <td class="sources">
+                    <?php foreach ($sources as $source): ?>
+                    <span class="col-source">
+                    <?= $sourcesArray[$source->getSourceCode()]; ?> : <input class="input-qty" name="<?= $source->getEntityId() ?>" value="<?= $source->getQty(); ?>" type="number"></input> Shipped : <?= $source->getQtyShipped() ?></div>
+                    </span>
+                    <?php endforeach; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align: center; padding-top: 50px;">
+    <button class="action-default scalable action-update-qty" type="button" >Update Qty</button>
+    </div>
+<script type="text/javascript">
+    require(["jquery"],function($) {
+        $(document).ready(function() {
+            $('.action-update-qty').click(function() {
+                var data = {};
+                data['data'] = {};
+                var inputs = $('.input-qty');
+                for (var i = 0; i < inputs.length; i++) {
+                    data['data'][inputs[i].name] = inputs[i].value;
+                }
+                $.ajax({
+                    url: '<?= $block->getUrl('order_source/Order/UpdateQty') ?>',
+                    type: 'POST',
+                    data: data,
+                    showLoader: true,
+                    complete: function (data) {
+                        console.log(data);
+                        alert(data.responseJSON.message)
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+</section>
+<?php endif; ?>

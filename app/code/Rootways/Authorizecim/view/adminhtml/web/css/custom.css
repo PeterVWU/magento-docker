@@ -1,0 +1,7 @@
+.rw-authorizecim-section .heading {background: url("../images/rw_authorize_logo.svg") no-repeat 0 50% / 18rem auto; padding-left: 20rem;}
+.rw-authorizecim-section .button-container {float: right;}
+.rw-authorizecim-section .config-alt {background: url("../images/rw_authorize_logo_pay.jpg") no-repeat scroll 0 0 / 100% auto;height: 40px;margin: 0.5rem 0 0;width: 320px;clear: both;}
+.rw-authorizecim-section .rw_admin_heading_left{float: left;width: 70%;}
+.rw-authorizecim-section .rw_admin_heading_right {float: left;width: 133px;}
+.rw-authorizecim-section.section-config.active > .admin__collapsible-block + input + fieldset{margin-left: 5rem;}
+.config-nav-block.rootways-configtab strong:before {background: url(../images/config-logo.svg) no-repeat;width: 16px;height: 16px;content: '';display: inline-block;margin-right: 12px;vertical-align: bottom;}

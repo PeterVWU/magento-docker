@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <!-- Queue Generator Cron -->
+        <job name="reward_point_notification_queue_generator" instance="Vapewholesaleusa\RewardPointNotifier\Cron\QueueGenerator" method="execute">
+            <config_path>reward_point_notifier/general/queue_expr</config_path>
+        </job>
+
+        <!-- Process Notifications Cron -->
+        <job name="reward_point_notification_processor" instance="Vapewholesaleusa\RewardPointNotifier\Cron\ProcessNotifications" method="execute">
+            <config_path>reward_point_notifier/general/email_expr</config_path>
+        </job>
+    </group>
+</config>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Vapewholesaleusa\OrderSource\Api\OrderSourceRepositoryInterface" type="Vapewholesaleusa\OrderSource\Model\OrderSourceRepository" />
+    <preference for="Vapewholesaleusa\OrderSource\Api\Data\OrderSourceInterface" type="Vapewholesaleusa\OrderSource\Model\Data\OrderSource"/>
+    <preference for="Vapewholesaleusa\OrderSource\Api\Data\OrderSourceSearchResultsInterface" type="Vapewholesaleusa\OrderSource\Model\OrderSourceSearchResults"/>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="ordersource_vapewholesaleusa_ordersource_listing_data_source" xsi:type="string">Vapewholesaleusa\OrderSource\Model\ResourceModel\OrderSource\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Sales\Model\OrderRepository">
+        <plugin name="order_get_list_before_order_source_plugin"
+                type="Vapewholesaleusa\OrderSource\Plugin\OrderGetListBeforePlugin"
+                sortOrder="1"/>
+    </type>
+    <type name="Vapewholesaleusa\OrderSource\Engines\ArrangeSourceCollectorEngine">
+        <arguments>
+            <argument name="arrangeSourceEngines" xsi:type="array">
+                <item name="arrange_sources_by_stock_qty" xsi:type="object">Vapewholesaleusa\OrderSource\Services\SourceArrangement\ArrangeSourcesByStockFactory</item>
+                <item name="arrange_sources_by_order_sources" xsi:type="object">Vapewholesaleusa\OrderSource\Services\SourceArrangement\ArrangeSourcesByOrderSourcesFactory</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

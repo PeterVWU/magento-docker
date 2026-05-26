@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Rootways Inc. Team
+ * @copyright Copyright (c) 2023 Rootways (https://www.rootways.com)
+ * @package Rootways_Authorizecim
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="admin">
+        <route id="rootwaysauthorizecim" frontName="rootwaysauthorizecim">
+            <module name="Rootways_Authorizecim" before="Magento_Backend" />
+        </route>
+    </router>
+</config>

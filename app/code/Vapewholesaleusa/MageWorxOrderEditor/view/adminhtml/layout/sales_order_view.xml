@@ -1,0 +1,12 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="order_history">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Vapewholesaleusa_MageWorxOrderEditor::order/view/comments.phtml</argument>
+            </action>
+            <arguments>
+                <argument name="view_model" xsi:type="object">Vapewholesaleusa\MageWorxOrderEditor\ViewModel\Comments</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

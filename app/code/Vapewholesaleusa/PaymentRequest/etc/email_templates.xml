@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="vusa_payment_request_email_template" label="New Payment Request" file="payment_request_new.html" type="html" module="Vapewholesaleusa_PaymentRequest" area="frontend"/>
+    <template id="vusa_payment_request_email_guest_template" label="New Payment Request for Guest" file="payment_request_new_guest.html" type="html" module="Vapewholesaleusa_PaymentRequest" area="frontend"/>
+</config>

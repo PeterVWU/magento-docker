@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="store_credit_notifier" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Store Credit Email Notifier</label>
+            <tab>vapewholesaleusa</tab>
+            <resource>Vapewholesaleusa_StoreCreditNotifier::config_section</resource>
+            <group id="general" translate="label comment" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configurations</label>
+                <field id="is_enabled" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="queue_expr" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Queue Generation Cron Expression</label>
+                    <depends>
+                        <field id="store_credit_notifier/general/is_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="email_expr" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Email Sending Cron Expression</label>
+                    <comment>
+                        This cron expression determines when the email queue will be processed daily.
+                        Each day corresponds to its own batch of scheduled notifications.
+                        You can modify only the time component of the expression to adjust the daily processing time.
+                    </comment>
+                    <depends>
+                        <field id="store_credit_notifier/general/is_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="per_day" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Emails Per Day</label>
+                    <comment>Specify the maximum number of emails to be sent per day. Leave empty for no limit.</comment>
+                    <depends>
+                        <field id="store_credit_notifier/general/is_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="email" translate="label" type="text" sortOrder="2" showInDefault="1" canRestore="1">
+                <label>Email Settings</label>
+                <field id="enabled" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="identity" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Store Credit Notifier Email Sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                    <depends>
+                        <field id="store_credit_notifier/email/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="template" translate="label comment" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Store Credit Notification Template</label>
+                    <comment>Email template chosen based on theme fallback when "Default" option is selected.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <depends>
+                        <field id="store_credit_notifier/email/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="copy_to" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send Store Credit Notification Copy To</label>
+                    <comment>Comma-separated.</comment>
+                    <validate>validate-emails</validate>
+                    <depends>
+                        <field id="store_credit_notifier/email/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="copy_method" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Send Store Credit Notification Email Copy Method</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Method</source_model>
+                    <depends>
+                        <field id="store_credit_notifier/email/enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

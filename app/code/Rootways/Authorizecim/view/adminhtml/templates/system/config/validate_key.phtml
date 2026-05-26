@@ -1,0 +1,13 @@
+<?php
+/**
+* @var \Rootways\Authorizecim\Block\Adminhtml\System\Config\ValidateKey $block
+*/
+?>
+<button class="scalable" type="button" id="<?= $block->getHtmlId() ?>" data-mage-init='{"testConnection":{
+    "url": "<?= $block->escapeUrl($block->getAjaxUrl()) ?>",
+    "elementId": "<?= $block->getHtmlId() ?>",
+    "successText": "<?= $block->escapeHtmlAttr(__('Success! Save Config, clear Magento cache, and check status.')) ?>",
+    "failedText": "<?= $block->escapeHtmlAttr(__('Validation Failed! Test again?')) ?>",
+    "fieldMapping": "<?= /* @noEscape */ $block->getFieldMapping() ?>"}, "validation": {}}'>
+    <span id="<?= $block->getHtmlId() ?>_result"><?= $block->escapeHtml($block->getButtonLabel()) ?></span>
+</button>

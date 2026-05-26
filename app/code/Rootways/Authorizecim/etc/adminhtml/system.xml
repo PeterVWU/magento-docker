@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+        <tab id="rootways_extensions" translate="label" sortOrder="51" class="rootways-configtab">
+            <label>Rootways Extensions</label>
+        </tab>
+		<section id="rootways_authorizecim" translate="label" type="text" sortOrder="100"
+                 showInDefault="1" showInWebsite="1" showInStore="1">
+			<label>Authorize.net Payment</label>
+			<tab>rootways_extensions</tab>
+			<resource>Rootways_Authorizecim::config_authorizecim</resource>
+			<group id="general" translate="label" type="text" sortOrder="1"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Settings</label>
+                <field id="installed_version" translate="label" type="label" sortOrder="0"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Extension Information</label>
+                    <frontend_model>Rootways\Authorizecim\Block\System\Config\InstalledVersion</frontend_model>
+                </field>
+                <field id="card_settings_heading" translate="label" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Status:</label>
+                    <frontend_model>Rootways\Authorizecim\Block\System\Config\Heading</frontend_model>
+                </field>
+                <field id="licencekey" translate="label" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>License Key</label>
+                    <comment><![CDATA[Please insert the license key and then click on the "Validate License Key" button.<br>
+                    After making the purchase, you should receive a license key via email. Contact us at <a target="_blank" href="mailto:help@rootways.com">help@rootways.com</a> if you didn't receive it.]]></comment>
+                </field>
+                <field id="validate_licencekey" translate="button_label" sortOrder="21"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label/>
+                    <button_label>Validate License Key</button_label>
+                    <frontend_model>Rootways\Authorizecim\Block\Adminhtml\System\Config\ValidateKey</frontend_model>
+                </field>
+                <field id="ismultistore" translate="label" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Is Multi Store</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>If your website has multiple stores with different URLs then set this option to Yes and contact us at help@rootways.com for register multi-store license key.</comment>
+                </field>
+			</group>
+		</section>
+
+		<section id="payment">
+            <group id="rootways_authorizecim_section" translate="label" type="text" sortOrder="10"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label><![CDATA[Payment Module for Authorize.net (by <a href="https://www.rootways.com" target="_blank">Rootways Inc.</a>)]]></label>
+                <comment><![CDATA[<div class="rw_admin_heading_left">Accept credit cards and Google Pay in your Magento store.<br />No setup or monthly fees and your customers never leave your store to complete the purchase.</div>
+                <div class="rw_admin_heading_right"><a href="https://account.authorize.net/ui/themes/anet/oauth/PricingPage.aspx?resellerID=109565" target="_blank"><img alt="Rootways Inc" src="https://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/authorized-net.svg"></a></div>]]></comment>
+                <fieldset_css>rw-authorizecim-section</fieldset_css>
+                <frontend_model>Rootways\Authorizecim\Block\Adminhtml\System\Config\Fieldset</frontend_model>
+
+                <group id="rootways_authorizecim_basic" translate="label" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Basic Authorize.net Settings.</label>
+                    <comment>
+                        <![CDATA[If your Authorize.net account is a sandbox, <a href="https://sandbox.authorize.net/" target="_blank">click here for API details.</a> And if your account is in production, <a href="https://account.authorize.net/" target="_blank">click here to get API details.</a><br/>
+                        For any queries and questions, reach out to us at <a href="mailto:help@rootways.com" target="_blank">help@rootways.com</a>
+                        </a>]]>
+                    </comment>
+
+                    <field id="api_authentication" translate="label" sortOrder="0"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>API Authentication Status:</label>
+                        <frontend_model>Rootways\Authorizecim\Block\System\Config\ApiAuthentication</frontend_model>
+                        <config_path>payment/rootways_authorizecim_basic/api_authentication</config_path>
+                    </field>
+                    <field id="environment" translate="label" type="select" sortOrder="1"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Environment</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\Environment</source_model>
+                        <config_path>payment/rootways_authorizecim_basic/environment</config_path>
+                    </field>
+
+                    <field id="api_login_id" translate="label" type="text" sortOrder="2"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>API Login ID</label>
+                        <config_path>payment/rootways_authorizecim_basic/api_login_id</config_path>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/api_key.jpg">Click here</a> to know how to get "API Login ID" and "Transaction Key" from the Authorize.net account.]]>
+                        </comment>
+                    </field>
+
+                    <field id="api_trans_key" translate="label" type="obscure" sortOrder="3"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Transaction Key</label>
+                       <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <config_path>payment/rootways_authorizecim_basic/api_trans_key</config_path>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/api_key.jpg">Click here</a> to know how to get "API Login ID" and "Transaction Key" from the Authorize.net account.]]>
+                        </comment>
+                    </field>
+
+                    <field id="api_client_key" translate="label" type="text" sortOrder="4"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Client Key</label>
+                        <config_path>payment/rootways_authorizecim_basic/api_client_key</config_path>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/client_key.jpg">Click here</a> to know how to get "Client Key" from the Authorize.net account.]]>
+                        </comment>
+                    </field>
+
+                    <field id="gateway_url" translate="label" type="text" sortOrder="5"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Gateway URL</label>
+                        <comment>Default Gateway URL https://api.authorize.net/xml/v1/request.api</comment>
+                        <config_path>payment/rootways_authorizecim_basic/gateway_url</config_path>
+                    </field>
+
+                    <field id="debug" translate="label" type="select" sortOrder="6"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Debug</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_basic/debug</config_path>
+                        <comment>rw_authorize_payment.log file will be generated under /var/log/</comment>
+                    </field>
+                </group>
+
+                <group id="rootways_authorizecim_option" translate="label" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Authorize.net CIM (Customer Information Manager) Settings.</label>
+                    <comment>
+                        <![CDATA[In this payment method, we have two types of payment forms "Hosted iFrame: (AcceptUI.js) and  On-site payment (with/without Accept.js). You can use anything you want as per your business model.<br/>
+                        Read more about Rootways Authorize.net extension on our website <a href="https://www.rootways.com/magento-2-authorize-net-cim-extension" target="_blank">www.rootways.com</a>
+                        </a>]]>
+                    </comment>
+
+
+                    <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label" type="text" sortOrder="2"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/rootways_authorizecim_option/title</config_path>
+                    </field>
+
+                    <field id="form_type" translate="label" type="select" sortOrder="5"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Form Type</label>
+                        <config_path>payment/rootways_authorizecim_option/form_type</config_path>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\HostedFormTypes</source_model>
+                        <comment>
+                            <![CDATA[<strong>On-site:</strong> Here we use the Magento payment form, and the user enters the credit card details on your website. This payment form has a feature to encrypt plain credit card details using Authorize.net Accept.js<br/>
+                                   <strong>Hosted iFrame Popup:</strong> Here we use Authorize.net hosted form, and the user enters the credit card details on the Authorize.net server. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/checkout_hosted_form.jpg">Click here</a> to know how the iFrame Pop Up looks on the checkout page.]]>
+                        </comment>
+                    </field>
+
+                    <field id="acceptjs" translate="label" type="select" sortOrder="8"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable Accept.js (SAQ A-EP Level PCI Compliance)</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Accept.js is a JavaScript library for sending secure payment data directly to Authorize.Net. so, it is very secure and recommended to set Yes.</comment>
+                        <config_path>payment/rootways_authorizecim_option/acceptjs</config_path>
+                        <depends>
+                            <field id="form_type">onsite</field>
+                        </depends>
+                    </field>
+
+                    <!--<field id="acceptuijs" translate="label comment" type="select" sortOrder="12"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable AcceptUI.js (SAQ-A Level PCI Compliance)</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option/acceptuijs</config_path>
+                        <comment>
+                            <![CDATA[NOTE: <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/checkout_hosted_form.jpg">Click here</a> to know how the iFrame Pop Up looks on the checkout page.]]>
+                        </comment>
+                        <depends>
+                            <field id="form_type">iframe</field>
+                        </depends>
+                    </field>-->
+
+                    <field id="hosted_popup_btn_txt" translate="label comment" type="text" sortOrder="13"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Hosted Popup Button Text</label>
+                        <config_path>payment/rootways_authorizecim_option/hosted_popup_btn_txt</config_path>
+                        <validate>required-entry</validate>
+                        <depends>
+                            <field id="form_type">iframe</field>
+                        </depends>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/checkout_hosted_form_title.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+                    <field id="hosted_popup_header_txt" translate="label comment" type="text" sortOrder="14"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Hosted Popup Header Text</label>
+                        <config_path>payment/rootways_authorizecim_option/hosted_popup_header_txt</config_path>
+                        <validate>required-entry</validate>
+                        <depends>
+                            <field id="form_type">iframe</field>
+                        </depends>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/checkout_hosted_form_title.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+
+                    <field id="vault_active" translate="label" type="select" sortOrder="21"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Vault Enabled (Save Credit Card)</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_cc_vault/active</config_path>
+                        <comment>
+                            <![CDATA[ This option gives the facility to save credit card tokens for future use. So when any user comes to your website a second time, they can generate an order without entering credit card details again. <br/>
+                            <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/save_credit_card.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <field id="always_save_cc" translate="label" type="select" sortOrder="21"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Always Save Credit Card</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option/always_save_cc</config_path>
+                        <depends>
+                            <field id="vault_active">1</field>
+                        </depends>
+                        <comment>
+                            <![CDATA[Hide save credit card option from checkout and always save the credit card token to the Magento Vault.]]>
+                        </comment>
+                    </field>
+
+                    <field id="validate_card" translate="label" type="select" sortOrder="22"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Validation Mode</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\validationMode</source_model>
+                        <config_path>payment/rootways_authorizecim_option/validate_card</config_path>
+                        <depends>
+                            <field id="vault_active">1</field>
+                        </depends>
+                        <comment><![CDATA[Choose whether to validate a credit card when updating it from the My Account Page.<br/>
+                        <strong>liveMode:</strong> $0 or $0.01 (depending on card type and processor) live transaction is processed against the card and then immediately voided.<br/>
+                        <strong>testMode:</strong> Card data is validated using simple mathematical checks to confirm that it appears to be valid. It is not a guarantee that the card is legitimate and customer data is not validated.]]></comment>
+                    </field>
+
+                    <field id="payment_action" translate="label" type="select" sortOrder="23"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Action</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\PaymentActionOrderOnly</source_model>
+                        <config_path>payment/rootways_authorizecim_option/payment_action</config_path>
+                        <comment>
+                            <![CDATA[<strong>Authorize Only:</strong> Payment authorizes only at the time of generating order and payment is captured while generating an invoice from admin order.<br/>
+                            <strong>Authorize and Capture:</strong> Payment will be authorized and captured only when the order is generated.<br/>
+                            <strong>Order:</strong> Use when you want to neither authorize nor capture but want to generate the credit card token along with $0 authorization.
+                            The actual transactions will be added to the payment gateway when generating the invoice from the Magento admin.]]>
+                        </comment>
+                    </field>
+
+                    <field id="cctypes" translate="label" type="multiselect" sortOrder="24"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Credit Card Types</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\CcType</source_model>
+                        <comment>Select credit card type which allows for capturing payment at the checkout page.</comment>
+                        <config_path>payment/rootways_authorizecim_option/cctypes</config_path>
+                    </field>
+
+                    <field id="cclogo_location" translate="label" type="select" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Credit Card Logo Location</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\CcLogoLocation</source_model>
+                        <config_path>payment/rootways_authorizecim_option/cclogo_location</config_path>
+                        <comment><![CDATA[Choose the location where you want to display the logo of the credit cards. <a target="_blank" href="https://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/cc_logo_location.gif">Click here</a> to view more.]]></comment>
+                    </field>
+
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="26"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>payment/rootways_authorizecim_option/allowspecific</config_path>
+                    </field>
+
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="27"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <config_path>payment/rootways_authorizecim_option/specificcountry</config_path>
+                    </field>
+
+                    <field id="msg" type="text" translate="label" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Message in Checkout Page</label>
+                        <comment>
+                        <![CDATA[Enter the message which you want to display on the checkout page. Leave it blank if you do not want to add any message. <a href="https://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/msg_cc_checkout.jpg" target="_blank">Click here </a> to view more.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_option/msg</config_path>
+                    </field>
+
+                    <field id="min_order_total" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Minimum Order Total</label>
+                        <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option/min_order_total</config_path>
+                    </field>
+
+                    <field id="max_order_total" translate="label" type="text" sortOrder="31"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Maximum Order Total</label>
+                         <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option/max_order_total</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label" type="text" sortOrder="32"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <config_path>payment/rootways_authorizecim_option/sort_order</config_path>
+                    </field>
+
+                    <field id="card_settings_heading" translate="label" sortOrder="33"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API Request Parameter Settings</label>
+                        <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                        <config_path>payment/rootways_authorizecim_option/card_settings_heading</config_path>
+                    </field>
+
+                    <field id="send_billing_address" translate="label" type="select" sortOrder="34"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Billing Address Details</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>If set to yes, then billing address will be sent with each transaction and billing details will be visible under Authorize.net transaction in your Authorize.net account.</comment>
+                        <config_path>payment/rootways_authorizecim_option/send_billing_address</config_path>
+                    </field>
+
+                    <field id="send_shipping_address" translate="label" type="select" sortOrder="35"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Shipping Address Details</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>If set to yes, then shipping address will be sent with each transaction and shipping details will be visible under Authorize.net transaction in your Authorize.net account.</comment>
+                        <config_path>payment/rootways_authorizecim_option/send_shipping_address</config_path>
+                    </field>
+
+                    <field id="send_cart_items" translate="label" type="select" sortOrder="36"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Cart Line Items</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option/send_cart_items</config_path>
+                    </field>
+
+                    <field id="captcha_heading" translate="label" sortOrder="40"
+                           showInDefault="1" showInWebsite="0" showInStore="1">
+						<label>Google reCAPTCHA Settings</label>
+						<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+						<config_path>payment/rootways_authorizecim_option/captcha_heading</config_path>
+					</field>
+
+                    <field id="enable_captcha" translate="label" type="select" sortOrder="41"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Enable Google reCAPTCHA</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\CaptchaType</source_model>
+                        <comment>If set to Yes, it will enable Google reCAPTCHA on the payment method page on the front-end checkout page. It helps in preventing carding and bot transaction related issues.</comment>
+						<config_path>payment/rootways_authorizecim_option/enable_captcha</config_path>
+                    </field>
+
+					<field id="site_key" translate="label" type="obscure" sortOrder="42"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+						<label>Google reCAPTCHA v2 Site Key</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+						<config_path>payment/rootways_authorizecim_option/site_key</config_path>
+						<comment><![CDATA[Click here to generate Google reCAPTCHA Key <a target="_blank" href="https://www.google.com/recaptcha/admin/create">https://www.google.com/recaptcha/admin/create</a>]]></comment>
+						<depends>
+							<field id="enable_captcha">1</field>
+						</depends>
+					</field>
+
+					<field id="secret_key" translate="label" type="obscure" sortOrder="43"
+                           showInDefault="1" showInWebsite="0" showInStore="1">
+						<label>Google reCAPTCHA v2 Secret Key</label>
+						<backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+						<config_path>payment/rootways_authorizecim_option/secret_key</config_path>
+						<depends>
+							<field id="enable_captcha">1</field>
+						</depends>
+					</field>
+
+                    <field id="v3_site_key" translate="label" type="obscure" sortOrder="44"
+                           showInDefault="1" showInWebsite="0" showInStore="0">
+						<label>Google reCAPTCHA v3 Site Key</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+						<config_path>payment/rootways_authorizecim_option/v3_site_key</config_path>
+						<comment><![CDATA[Click here to generate Google reCAPTCHA Key <a target="_blank" href="https://www.google.com/recaptcha/admin/create">https://www.google.com/recaptcha/admin/create</a>]]></comment>
+						<depends>
+							<field id="enable_captcha">3</field>
+						</depends>
+					</field>
+
+					<field id="v3_secret_key" translate="label" type="obscure" sortOrder="45"
+                           showInDefault="1" showInWebsite="0" showInStore="1">
+						<label>Google reCAPTCHA v3 Secret Key</label>
+						<backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+						<config_path>payment/rootways_authorizecim_option/v3_secret_key</config_path>
+						<depends>
+							<field id="enable_captcha">3</field>
+						</depends>
+					</field>
+
+                    <field id="c_minimum_score" translate="label" type="text" sortOrder="46"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+						<label>Minimum Score Threshold</label>
+						<config_path>payment/rootways_authorizecim_option/c_minimum_score</config_path>
+                        <comment><![CDATA[<strong>Default Value: 0.5</strong> <br/>From 0.0 to 1.0, where 1.0 is very likely a good interaction, and 0.0 is very likely a bot. For more details, see the official documentation <a target="_blank" href="https://developers.google.com/recaptcha/docs/v3#interpreting_the_score">Interpreting the score.</a>]]></comment>
+						<depends>
+							<field id="enable_captcha">3</field>
+						</depends>
+					</field>
+
+                    <field id="v2_validation_failure_message" translate="label" type="textarea" sortOrder="47"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                        <label>reCAPTCHA v2 Validation Failure Message.</label>
+                        <comment>Default Message; reCAPTCHA verification failed.</comment>
+                        <config_path>payment/rootways_authorizecim_option/v2_validation_failure_message</config_path>
+                        <depends>
+							<field id="enable_captcha">1</field>
+						</depends>
+                    </field>
+
+                    <field id="v3_validation_failure_message" translate="label" type="textarea" sortOrder="48"
+                           showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                        <label>reCAPTCHA v3 Validation Failure Message.</label>
+                        <comment>Default Message; You cannot proceed with such operation, your reCAPTCHA reputation is too low.</comment>
+                        <config_path>payment/rootways_authorizecim_option/v3_validation_failure_message</config_path>
+                        <depends>
+							<field id="enable_captcha">3</field>
+						</depends>
+                    </field>
+
+                    <!-- Captcha Language and Theme and Size -->
+
+					<field id="captcha_js" translate="label" type="select" sortOrder="49" showInDefault="1" showInWebsite="0" showInStore="0">
+						<label>Include Google reCAPTCHA JS on Checkout page</label>
+						<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+						<comment>If the theme or any other extension on your website already including Google reCAPTCHA JavaScript on the checkout page of your website then set this option to "No", otherwise set it to "YES" to include Google reCAPTCHA JS. Here is the link to Google reCAPTCHA  JS https://www.google.com/recaptcha/api.js. It should be included once only on checkout page.</comment>
+						<config_path>payment/rootways_authorizecim_option/captcha_js</config_path>
+						<depends>
+							<field id="enable_captcha">1</field>
+						</depends>
+					</field>
+                </group>
+
+                <group id="rootways_authorizecim_echeck" translate="label" type="text"
+                       sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Authorize.net eCheck (ACH) Payment Method Settings</label>
+                    <field id="active" translate="label" type="select" sortOrder="1"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_echeck/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label" type="text" sortOrder="2"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/rootways_authorizecim_echeck/title</config_path>
+                    </field>
+
+                    <field id="payment_action" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Action</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\PaymentAction</source_model>
+                        <comment>
+                            <![CDATA[<strong>Authorize Only:</strong> Payment authorizes only at the time of generating order and payment is captured while generating an invoice from admin order.<br/><strong>Authorize and Capture:</strong> Payment will be authorized and captured only when the order is generated.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_echeck/payment_action</config_path>
+                    </field>
+
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="26"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>payment/rootways_authorizecim_echeck/allowspecific</config_path>
+                    </field>
+
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="27"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <config_path>payment/rootways_authorizecim_echeck/specificcountry</config_path>
+                    </field>
+
+                    <field id="msg" type="text" translate="label" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Message in Checkout Page</label>
+                        <comment>
+                            <![CDATA[Enter the message which you want to display on the checkout page.
+                        Leave it blank if you do not want to add any message.
+                        <a href="https://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/msg_cc_checkout.jpg" target="_blank">Click here </a> to view more.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_echeck/msg</config_path>
+                    </field>
+
+                    <field id="min_order_total" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Minimum Order Total</label>
+                        <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_echeck/min_order_total</config_path>
+                    </field>
+
+                    <field id="max_order_total" translate="label" type="text" sortOrder="31"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Maximum Order Total</label>
+                        <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_echeck/max_order_total</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label" type="text" sortOrder="32"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <config_path>payment/rootways_authorizecim_echeck/sort_order</config_path>
+                    </field>
+
+                    <field id="card_settings_heading" translate="label" sortOrder="33"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API Request Parameter Settings</label>
+                        <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                        <config_path>payment/rootways_authorizecim_echeck/card_settings_heading</config_path>
+                    </field>
+
+                    <field id="send_billing_address" translate="label" type="select" sortOrder="34"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Billing Address Details</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>If set to yes, then billing address will be sent with each transaction and billing details will be visible under Authorize.net transaction in your Authorize.net account.</comment>
+                        <config_path>payment/rootways_authorizecim_echeck/send_billing_address</config_path>
+                    </field>
+
+                    <field id="send_shipping_address" translate="label" type="select" sortOrder="35"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Shipping Address Details</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>If set to yes, then shipping address will be sent with each transaction and shipping details will be visible under Authorize.net transaction in your Authorize.net account.</comment>
+                        <config_path>payment/rootways_authorizecim_echeck/send_shipping_address</config_path>
+                    </field>
+
+                    <field id="send_cart_items" translate="label" type="select" sortOrder="36"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Cart Line Items</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_echeck/send_cart_items</config_path>
+                    </field>
+                </group>
+
+                <group id="rootways_authorizecim_option_hosted" translate="label" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hosted Payment Form Settings</label>
+                    <!--<comment>
+                        <![CDATA[This hosted form method will be discontinued soon.<br/> Use AcceptUI.js method of our module which is same as this. <a href="#">Click here</a> to know how to enable this..</a>]]>
+                    </comment>-->
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+                    <field id="active" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label" type="text" sortOrder="11"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/rootways_authorizecim_option_hosted/title</config_path>
+                    </field>
+
+                    <field id="save_cc" translate="label" type="select" sortOrder="15"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Save Credit Card</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/save_cc</config_path>
+                        <comment>
+                            <![CDATA[Allow saving card from the hosted iframe payment method. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/hosted_save_credit_card.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <field id="hosted_form_order_btn_txt" translate="label" type="text" sortOrder="16"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Hosted Form Place Order Button Text</label>
+                        <config_path>payment/rootways_authorizecim_option_hosted/hosted_form_order_btn_txt</config_path>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/embedded_frame_btn_txt.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <!--
+                    <field id="hosted_form_header" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Hosted Form Header Text</label>
+                        <config_path>payment/rootways_authorizecim_option_hosted/hosted_form_header</config_path>
+                        <comment>
+                            <![CDATA[<a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/checkout_hosted_form_title.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+                    -->
+
+                    <field id="hosted_form_color" translate="label" type="text" sortOrder="17"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Color of the Form</label>
+                        <config_path>payment/rootways_authorizecim_option_hosted/hosted_form_color</config_path>
+                        <comment>
+                            <![CDATA[Acceptable values are <a target="_blank" href="https://www.w3.org/TR/css-color-3/">CSS color keywords</a> or RGB hexadecimal values. Defaults to #3F8FCD, a moderate shade of blue. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/form_color.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <field id="show_bankaccount" translate="label" type="select" sortOrder="18"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Show Bank Account Payment Option (eCheck or ACH)</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/show_bankaccount</config_path>
+                        <comment>
+                            <![CDATA[Set it to "Yes" if you want to show Bank Account Payment Form along with credit card form at the front-end. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/bank account.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <!--
+                    <field id="show_visacheckout" translate="label" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Show Digital Payment (Visa Checkout) Payment Option</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/show_visacheckout</config_path>
+                        <comment>
+                            <![CDATA[Set it to "Yes" if you want to show Visa Checkout Payment Form along with credit card form at the front-end. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/digital_payment.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <field id="visacheckout_api_key" translate="label" type="obscure" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Visa Checkout API Key</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/visacheckout_api_key</config_path>
+                        <depends>
+                            <field id="show_visacheckout">1</field>
+                        </depends>
+                        <comment>
+                            <![CDATA[Enter Visa Checkout API Key you got from your Authorize.net account. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/visa_checkout_key.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+                    -->
+
+                    <field id="payment_action" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Action</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\PaymentAction</source_model>
+                        <comment>
+                            <![CDATA[<strong>Authorize Only:</strong> Payment authorizes only at the time of generating order and payment is captured while generating an invoice from admin order.<br/><strong>Authorize and Capture:</strong> Payment will be authorized and captured only when the order is generated.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_option_hosted/payment_action</config_path>
+                    </field>
+
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="22"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/allowspecific</config_path>
+                    </field>
+
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="23"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/specificcountry</config_path>
+                    </field>
+
+                    <field id="msg" type="text" translate="label" sortOrder="24" showInDefault="1"
+                           showInWebsite="1" showInStore="0">
+                        <label>Message in Checkout Page</label>
+                        <comment>
+                        <![CDATA[Enter the message which you want to display on the checkout page. Leave it blank if you do not want to add any message. <a href="https://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/msg_hosted_checkout.jpg" target="_blank">Click here </a> to view more.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_option_hosted/msg</config_path>
+                    </field>
+
+                    <field id="min_order_total" translate="label" type="text" sortOrder="28"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Minimum Order Total</label>
+                        <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option_hosted/min_order_total</config_path>
+                    </field>
+
+                    <field id="max_order_total" translate="label" type="text" sortOrder="29"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Maximum Order Total</label>
+                         <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option_hosted/max_order_total</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <config_path>payment/rootways_authorizecim_option_hosted/sort_order</config_path>
+                    </field>
+
+                    <field id="card_settings_heading" translate="label" sortOrder="31"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>API Request Parameter Settings</label>
+                        <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/card_settings_heading</config_path>
+                    </field>
+
+                    <field id="send_billing_address" translate="label" type="select" sortOrder="34"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Billing Address Details</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>If set to yes, then billing address will be sent with each transaction and billing details will be visible under Authorize.net transaction in your Authorize.net account.</comment>
+                        <config_path>payment/rootways_authorizecim_option_hosted/send_billing_address</config_path>
+                    </field>
+
+                    <field id="send_shipping_address" translate="label" type="select" sortOrder="35"
+                           showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Transfer Shipping Address Details</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>If set to yes, then shipping address will be sent with each transaction and shipping details will be visible under Authorize.net transaction in your Authorize.net account.</comment>
+                        <config_path>payment/rootways_authorizecim_option_hosted/send_shipping_address</config_path>
+                    </field>
+
+                    <field id="send_cart_items" translate="label" type="select" sortOrder="36"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Transfer Cart Line Items</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_hosted/send_cart_items</config_path>
+                    </field>
+                </group>
+
+                <group id="rootways_authorizecim_option_googlepay" translate="label" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Pay through Authorize.net</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+                    <field id="active" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable Google Pay</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/title</config_path>
+                    </field>
+
+                    <field id="gateway_id" translate="label" type="text" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Payment Gateway ID</label>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/gateway_id</config_path>
+                    </field>
+
+                    <field id="merchant_name" translate="label" type="text" sortOrder="21"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>merchant Name</label>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/merchant_name</config_path>
+                    </field>
+
+
+
+
+                    <field id="payment_action" translate="label" type="select" sortOrder="40"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Action</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\PaymentAction</source_model>
+                        <comment>
+                            <![CDATA[<strong>Authorize Only:</strong> Payment authorizes only at the time of generating order and payment is captured while generating an invoice from admin order.<br/><strong>Authorize and Capture:</strong> Payment will be authorized and captured only when the order is generated.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/payment_action</config_path>
+                    </field>
+
+                    <field id="cctypes" translate="label" type="multiselect" sortOrder="50"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Credit Card Types</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\CcType</source_model>
+                        <comment>Select credit card type which allows for capturing payment at the checkout page using Google Pay.</comment>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/cctypes</config_path>
+                    </field>
+
+                    <field id="merchant_country_code" translate="label" type="select" sortOrder="100"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Merchant Country</label>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/merchant_country_code</config_path>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <comment>
+                            <![CDATA[Select the Country of your authorize.net account.]]>
+                        </comment>
+                    </field>
+
+                    <field id="currency" translate="label" type="select" sortOrder="110"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Accepted Currency</label>
+                        <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/currency</config_path>
+                        <comment>
+                            <![CDATA[Select the Currency of your authorize.net account.]]>
+                        </comment>
+                    </field>
+
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="120"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/allowspecific</config_path>
+                    </field>
+
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="130"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/specificcountry</config_path>
+                    </field>
+
+                    <field id="min_order_total" translate="label" type="text" sortOrder="140"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Minimum Order Total</label>
+                        <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/min_order_total</config_path>
+                    </field>
+
+                    <field id="max_order_total" translate="label" type="text" sortOrder="150"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Maximum Order Total</label>
+                         <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/max_order_total</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label" type="text" sortOrder="160"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <config_path>payment/rootways_authorizecim_option_googlepay/sort_order</config_path>
+                    </field>
+                </group>
+
+                <group id="rootways_authorizecim_option_visa" translate="label" sortOrder="80"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>VISA Checkout through Authorize.net (Discontinued)</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+                    <comment>Authorize.net has removed VISA Checkout from their Digital Payment Solutions. Therefore, you can no longer use VISA Checkout.</comment>
+
+                    <field id="active" translate="label" type="select" sortOrder="10"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/rootways_authorizecim_option_visa/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label" type="text" sortOrder="11"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/rootways_authorizecim_option_visa/title</config_path>
+                    </field>
+
+                    <field id="visacheckout_api_key" translate="label" type="obscure" sortOrder="18"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Visa Checkout API Key</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <config_path>payment/rootways_authorizecim_option_visa/visacheckout_api_key</config_path>
+                        <comment>
+                            <![CDATA[Enter VISA Checkout API Key you got from your Authorize.net account. <a target="_blank" href="http://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/visa_checkout_key.jpg">Click here</a> to know more.]]>
+                        </comment>
+                    </field>
+
+                    <field id="currency" translate="label" type="select" sortOrder="19"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Accepted Currency</label>
+                        <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                        <config_path>payment/rootways_authorizecim_option_visa/currency</config_path>
+                        <comment>
+                            <![CDATA[Select the currency in which you want to capture payment from VISA Checkout.]]>
+                        </comment>
+                    </field>
+
+                    <field id="locale" translate="label" type="select" sortOrder="20"
+                           showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Locale</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\Locale</source_model>
+                        <config_path>payment/rootways_authorizecim_option_visa/locale</config_path>
+                        <comment>
+                            <![CDATA[Select value for the locale, which controls how text displays in the Visa Checkout popup.]]>
+                        </comment>
+                    </field>
+
+                    <field id="payment_action" translate="label" type="select" sortOrder="25"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Action</label>
+                        <source_model>Rootways\Authorizecim\Model\Adminhtml\Source\PaymentAction</source_model>
+                        <comment>
+                            <![CDATA[<strong>Authorize Only:</strong> Payment authorizes only at the time of generating order and payment is captured while generating an invoice from admin order.<br/><strong>Authorize and Capture:</strong> Payment will be authorized and captured only when the order is generated.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_option_visa/payment_action</config_path>
+                    </field>
+
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="27"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>payment/rootways_authorizecim_option_visa/allowspecific</config_path>
+                    </field>
+
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="28"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <config_path>payment/rootways_authorizecim_option_visa/specificcountry</config_path>
+                    </field>
+
+                    <field id="msg" type="text" translate="label" sortOrder="29"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Message in Checkout Page</label>
+                        <comment>
+                        <![CDATA[Enter the message which you want to display on the checkout page. Leave it blank if you do not want to add any message. <a href="https://rootways.com/pub/media/wysiwyg/description_m2/authorizenet/system_xml/msg_visa_checkout.jpg" target="_blank">Click here </a> to view more.]]>
+                        </comment>
+                        <config_path>payment/rootways_authorizecim_option_visa/msg</config_path>
+                    </field>
+
+                    <field id="min_order_total" translate="label" type="text" sortOrder="30"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Minimum Order Total</label>
+                        <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option_visa/min_order_total</config_path>
+                    </field>
+
+                    <field id="max_order_total" translate="label" type="text" sortOrder="31"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Maximum Order Total</label>
+                         <validate>validate-number</validate>
+                        <config_path>payment/rootways_authorizecim_option_visa/max_order_total</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label" type="text" sortOrder="32"
+                           showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <config_path>payment/rootways_authorizecim_option_visa/sort_order</config_path>
+                    </field>
+                </group>
+            </group>
+		</section>
+	</system>
+</config>

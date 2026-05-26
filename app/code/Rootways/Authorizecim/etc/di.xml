@@ -1,0 +1,810 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Rootways, Inc. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Vault\Controller\Cards\DeleteAction" type="Rootways\Authorizecim\Controller\VaultCards\DeleteAction" />
+    <preference for="Magento\Framework\App\Response\HeaderProvider\XFrameOptions" type="Rootways\Authorizecim\Model\Plugin\ResponseHeader\XFrameOptions" />
+    <type name="Magento\Framework\Session\SessionStartChecker">
+        <plugin name="rw_transparent_session_checker" type="Rootways\Authorizecim\Plugin\TransparentSessionChecker"/>
+    </type>
+
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="AuthorizecimFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Rootways\Authorizecim\Model\SampleConfigProvider::CODE</argument>
+            <!--<argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form\Cc</argument>-->
+            <argument name="formBlockType" xsi:type="string">Rootways\Authorizecim\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Rootways\Authorizecim\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuthorizecimValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">AuthorizecimValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">AuthorizecimCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Rootways\Authorizecim\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">Rootways\Authorizecim\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="AuthorizecimValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuthorizecimConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Rootways\Authorizecim\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Rootways\Authorizecim\Gateway\Config\Config" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Rootways\Authorizecim\Model\SampleConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+
+    <virtualType name="AuthorizecimCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">Rootways\Authorizecim\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">AuthorizecimCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+    <virtualType name="AuthorizecimCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="order" xsi:type="string">AuthorizecimOrderCommand</item>
+                <item name="orderauthorize" xsi:type="string">AuthorizecimOrderAuthorizeCommand</item>
+                <item name="orderonly_vault" xsi:type="string">AuthorizecimOrderVaultCommand</item>
+                <item name="authorize" xsi:type="string">AuthorizecimAuthorizeCommand</item>
+                <item name="sale" xsi:type="string">AuthorizecimSaleCommand</item>
+                <item name="capture" xsi:type="string">AuthorizecimCaptureStrategyCommand</item>
+                <item name="settlement" xsi:type="string">AuthorizecimCaptureCommand</item>
+                <item name="refund" xsi:type="string">AuthorizecimRefundCommand</item>
+                <item name="void" xsi:type="string">AuthorizecimVoidCommand</item>
+                <item name="cancel" xsi:type="string">AuthorizecimCancelCommand</item>
+                <item name="accept_payment" xsi:type="string">AuthorizecimAcceptPaymentCommand</item>
+                <item name="deny_payment" xsi:type="string">AuthorizecimDenyPaymentCommand</item>
+                <item name="vault_authorize" xsi:type="string">AuthorizecimVaultAuthorizeCommand</item>
+                <item name="vault_capture" xsi:type="string">AuthorizecimVaultCaptureCommand</item>
+                <item name="vault_sale" xsi:type="string">AuthorizecimVaultSaleCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Rootways\Authorizecim\Gateway\ErrorMapper\VirtualConfigReader" type="Magento\Payment\Gateway\ErrorMapper\VirtualConfigReader">
+        <arguments>
+            <argument name="fileName" xsi:type="string">rwauthorizecim_error_mapping.xml</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Rootways\Authorizecim\Gateway\ErrorMapper\VirtualMappingData" type="Magento\Payment\Gateway\ErrorMapper\MappingData">
+        <arguments>
+            <argument name="reader" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualConfigReader</argument>
+            <argument name="cacheId" xsi:type="string">braintree_error_mapper</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper" type="Magento\Payment\Gateway\ErrorMapper\ErrorMessageMapper">
+        <arguments>
+            <argument name="messageMapping" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualMappingData</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize transaction commands -->
+    <virtualType name="AuthorizecimAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimAuthorizationHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\TransactionDataBuilder</item>
+                <item name="vault" xsi:type="string">Rootways\Authorizecim\Gateway\Request\VaultDataBuilder</item>
+                <item name="solutionid" xsi:type="string">Rootways\Authorizecim\Gateway\Request\SolutionId</item>
+                <item name="order" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderDataBuilder</item>
+                <item name="customer" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CustomerDataBuilder</item>
+                <item name="billingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\BillingAddressDataBuilder</item>
+                <item name="shippingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\ShippingAddressDataBuilder</item>
+                <item name="customerip" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CustomerIpDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimAuthorizationHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\PaymentDetailsHandler</item>
+                <item name="vault_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\VaultDetailsHandler</item>
+                <item name="avscvv" xsi:type="string">Rootways\Authorizecim\Gateway\Response\AVSHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+    <!-- $0 Auth - Order Only Commands -->
+    <!--<preference for="Magento\Payment\Gateway\Data\Order\OrderAdapter" type="Rootways\Authorizecim\Gateway\Data\Order\OrderAdapter"/>-->
+    <!--<type name="Magento\Sales\Model\Order">
+        <plugin name="rw_authorizecim_order_invoice" type="Rootways\Authorizecim\Plugin\OrderCanInvoice"/>
+    </type>-->
+    <!--<type name="Rootways\Authorizecim\Controller\Adminhtml\Order\Authorization">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuthorizecimCommandPool</argument>
+        </arguments>
+    </type>-->
+    <type name="Magento\Vault\Model\Method\Vault">
+        <plugin name="rw_vault_order_around" type="Rootways\Authorizecim\Model\Plugin\Method\Vault"/>
+    </type>
+
+    <virtualType name="AuthorizecimOrderCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimOrderRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\OrderOnlyTransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimOrderHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\OrderOnlyResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderOnlyDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\OrderOnlyPaymentDetailsHandler</item>
+                <item name="vault_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\OrderOnlyVaultDetailsHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+    <!-- Order Only Vault -->
+    <virtualType name="AuthorizecimOrderVaultCommand" type="AuthorizecimOrderCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimOrderVaultRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\OrderOnlyVaultTransferFactory</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimOrderVaultHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\OrderOnlyVaultResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderVaultRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderOnlyVaultDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderVaultHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\OrderOnlyVaultPaymentDetailsHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+
+
+
+    <virtualType name="AuthorizecimOrderAuthorizeCommand" type="AuthorizecimAuthorizeCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimOrderAuthorizeRequest</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimOrderAuthorizeHandler</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderAuthorizeRequest" type="AuthorizecimAuthorizeRequest">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderOnlyAuthorizeTokenBuilder</item>
+                <item name="order" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderOnlyOrderDataBuilder</item>
+                <item name="vault" xsi:type="string">Rootways\Authorizecim\Gateway\Request\NullDataBuilder</item>
+                <item name="billingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\NullDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderAuthorizeHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\PaymentDetailsHandler</item>
+                <item name="avscvv" xsi:type="string">Rootways\Authorizecim\Gateway\Response\AVSHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+
+
+
+
+
+
+
+    <!--<virtualType name="AuthorizecimOrderCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimOrderCaptureRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\OrderOnlyTransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimOrderHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\OrderOnlyResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderCaptureRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\TestOrderOnlyCaptureBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>-->
+
+
+
+
+
+
+
+
+
+    <!-- Sale transaction commands -->
+    <virtualType name="AuthorizecimSaleCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimAuthorizationHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Strategy commands -->
+    <virtualType name="AuthorizecimCaptureStrategyCommand" type="Rootways\Authorizecim\Gateway\Command\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuthorizecimCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Pre Auth commands -->
+    <virtualType name="AuthorizecimCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimCaptureRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimPreAuthCaptureHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimCaptureRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="capturetransactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CaptureTransactionDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimPreAuthCaptureHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\PaymentDetailsHandler</item>
+                <!--<item name="vault_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\VaultDetailsHandler</item>
+                <item name="avscvv" xsi:type="string">Rootways\Authorizecim\Gateway\Response\AVSHandler</item>-->
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Refund Transaction Commands -->
+    <virtualType name="AuthorizecimRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimRefundBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">Rootways\Authorizecim\Gateway\Response\RefundHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimRefundBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="refundtransactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\RefundDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void Transaction Commands -->
+    <virtualType name="AuthorizecimVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimVoidBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">Rootways\Authorizecim\Gateway\Response\VoidHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVoidBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="voidtransactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\VoidDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Cancel Transaction Commands -->
+    <virtualType name="AuthorizecimCancelCommand" type="AuthorizecimVoidCommand">
+        <arguments>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\CancelResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Accept Payment Commands -->
+    <virtualType name="AuthorizecimAcceptPaymentCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimAcceptPaymentBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\ReviewPaymentTransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">Rootways\Authorizecim\Gateway\Response\AcceptPaymentHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimAcceptPaymentBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="acceptpaymenttransactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\AcceptPaymentDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Deny Payment Commands -->
+    <virtualType name="AuthorizecimDenyPaymentCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimDenyPaymentBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\ReviewPaymentTransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">Rootways\Authorizecim\Gateway\Response\DenyPaymentHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimDenyPaymentBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="denypaymenttransactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\DenyPaymentDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+    <virtualType name="AuthorizecimLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">Rootways\Authorizecim\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimZendHttpClient" type="Rootways\Authorizecim\Gateway\Http\Client\Zend">
+        <arguments>
+            <argument name="logger" xsi:type="object">AuthorizecimLogger</argument>
+            <argument name="converter" xsi:type="object">Rootways\Authorizecim\Gateway\Http\Converter\XmlToArray</argument>
+        </arguments>
+    </virtualType>
+
+
+
+
+
+
+
+
+    <!-- Vault Facade-->
+    <virtualType name="AuthorizecimCreditCardVaultFacade" type="Magento\Vault\Model\Method\Vault">
+        <arguments>
+            <argument name="config" xsi:type="object">AuthorizecimVaultPaymentConfig</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuthorizecimVaultPaymentValueHandlerPool</argument>
+            <argument name="vaultProvider" xsi:type="object">AuthorizecimFacade</argument>
+            <argument name="code" xsi:type="const">Rootways\Authorizecim\Model\SampleConfigProvider::CC_VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultPaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Rootways\Authorizecim\Model\SampleConfigProvider::CC_VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultPaymentValueHandlerPool" type="VaultPaymentValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuthorizecimVaultPaymentValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+     <virtualType name="AuthorizecimVaultPaymentValueHandler" type="VaultPaymentDefaultValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">AuthorizecimVaultPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+
+
+    <virtualType name="AuthorizecimVaultAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimVaultAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimVaultResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultSaleCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimVaultAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimVaultResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimCaptureRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimPreAuthCaptureHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="tokendata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\TokenDataBuilder</item>
+                <item name="solutionid" xsi:type="string">Rootways\Authorizecim\Gateway\Request\SolutionId</item>
+                <item name="order" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderDataBuilder</item>
+                <item name="customer" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CustomerDataBuilder</item>
+                <!--<item name="billingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\BillingAddressDataBuilder</item>-->
+                <item name="shippingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\ShippingAddressDataBuilder</item>
+                <item name="customerip" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CustomerIpDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Rootways\Authorizecim\Gateway\Response\PaymentDetailsHandler</item>
+                <!--<item name="avscvv" xsi:type="string">Rootways\Authorizecim\Gateway\Response\AVSHandler</item>-->
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+    <!-- Command managers section for Vault -->
+    <virtualType name="AuthorizecimCommandManager" type="Magento\Payment\Gateway\Command\CommandManager">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuthorizecimCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Payment\Gateway\Command\CommandManagerPool">
+        <arguments>
+            <argument name="executors" xsi:type="array">
+                <item name="rootways_authorizecim_option" xsi:type="string">AuthorizecimCommandManager</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- END command managers section for Vault -->
+
+    <!-- VISA Checkout -->
+    <virtualType name="AuthorizecimVisaCheckoutFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Rootways\Authorizecim\Model\VisaPaymentConfigProvider::CODE</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuthorizecimVisaCheckoutValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">AuthorizecimValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">AuthorizecimVisaCheckoutCommandPool</argument>
+            <argument name="formBlockType" xsi:type="object">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Rootways\Authorizecim\Block\Info</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVisaCheckoutValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuthorizecimVisaCheckoutConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVisaCheckoutConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">AuthorizecimVisaCheckoutConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVisaCheckoutConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Rootways\Authorizecim\Model\VisaPaymentConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVisaCheckoutCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">AuthorizecimVisaCheckoutAuthorizeCommand</item>
+                <item name="sale" xsi:type="string">AuthorizecimVisaCheckoutAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">AuthorizecimVisaCheckoutCaptureStrategyCommand</item>
+                <item name="settlement" xsi:type="string">AuthorizecimCaptureCommand</item>
+                <item name="refund" xsi:type="string">AuthorizecimRefundCommand</item>
+                <item name="void" xsi:type="string">AuthorizecimVoidCommand</item>
+                <item name="cancel" xsi:type="string">AuthorizecimCancelCommand</item>
+                <item name="accept_payment" xsi:type="string">AuthorizecimAcceptPaymentCommand</item>
+                <item name="deny_payment" xsi:type="string">AuthorizecimDenyPaymentCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize And Sale Transaction Commands -->
+    <virtualType name="AuthorizecimVisaCheckoutAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimVisaCheckoutAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimAuthorizationHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">Rootways\Authorizecim\Gateway\ErrorMapper\VirtualErrorMessageMapper</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVisaCheckoutAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\VisaCheckout\TransactionDataBuilder</item>
+                <item name="order" xsi:type="string">Rootways\Authorizecim\Gateway\Request\OrderDataBuilder</item>
+                <item name="customer" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CustomerDataBuilder</item>
+                <item name="addressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\AddressDataBuilder</item>
+                <!--<item name="billingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\BillingAddressDataBuilder</item>
+                <item name="shippingaddressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\ShippingAddressDataBuilder</item>
+                <item name="customerip" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CustomerIpDataBuilder</item>-->
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Strategy commands -->
+    <virtualType name="AuthorizecimVisaCheckoutCaptureStrategyCommand" type="Rootways\Authorizecim\Gateway\Command\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuthorizecimVisaCheckoutCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+
+
+    <!-- Google Pay -->
+    <virtualType name="AuthorizecimGooglePayFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Rootways\Authorizecim\Model\GooglePayConfigProvider::GOOGLE_PAY_CODE</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuthorizecimGooglePayValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">AuthorizecimValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">AuthorizecimGooglePayCommandPool</argument>
+            <argument name="formBlockType" xsi:type="object">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Rootways\Authorizecim\Block\ApplePay\Info</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimGooglePayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuthorizecimGooglePayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimGooglePayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">AuthorizecimGooglePayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimGooglePayConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Rootways\Authorizecim\Model\GooglePayConfigProvider::GOOGLE_PAY_CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimGooglePayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">AuthorizecimGooglePayAuthorizeCommand</item>
+                <item name="sale" xsi:type="string">AuthorizecimGooglePayAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">AuthorizecimGooglePayCaptureStrategyCommand</item>
+                <item name="settlement" xsi:type="string">AuthorizecimCaptureCommand</item>
+                <item name="void" xsi:type="string">AuthorizecimVoidCommand</item>
+                <item name="refund" xsi:type="string">AuthorizecimRefundCommand</item>
+                <item name="cancel" xsi:type="string">AuthorizecimCancelCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize And Sale Transaction Commands -->
+    <virtualType name="AuthorizecimGooglePayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimGooglePayAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Rootways\Authorizecim\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">AuthorizecimZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">AuthorizecimAuthorizationHandler</argument>
+            <argument name="validator" xsi:type="object">Rootways\Authorizecim\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimGooglePayAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="commondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\CommonDataBuilder</item>
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\GooglePay\TransactionDataBuilder</item>
+                <item name="addressdata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\AddressDataBuilder</item>
+                <item name="markettype" xsi:type="string">Rootways\Authorizecim\Gateway\Request\Applepay\MarketType</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Strategy commands -->
+    <virtualType name="AuthorizecimGooglePayCaptureStrategyCommand" type="Rootways\Authorizecim\Gateway\Command\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuthorizecimGooglePayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+
+
+    <!-- eCheck Payment Method Configuration -->
+    <virtualType name="AuthorizecimEcheckFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Rootways\Authorizecim\Model\EcheckConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Rootways\Authorizecim\Block\EcheckForm</argument>
+            <argument name="infoBlockType" xsi:type="string">Rootways\Authorizecim\Block\InfoEcheck</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuthorizecimEcheckValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">AuthorizecimEcheckValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">AuthorizecimEcheckCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimEcheckValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuthorizecimEcheckConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuthorizecimEcheckConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Rootways\Authorizecim\Gateway\Config\EcheckConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Rootways\Authorizecim\Gateway\Config\EcheckConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Rootways\Authorizecim\Model\EcheckConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimEcheckCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">Rootways\Authorizecim\Gateway\Config\EcheckConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuthorizecimEcheckValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">AuthorizecimEcheckCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+
+    <virtualType name="AuthorizecimEcheckCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">AuthorizecimEcheckAuthorizeCommand</item>
+                <item name="sale" xsi:type="string">AuthorizecimEcheckAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">AuthorizecimEcheckCaptureStrategyCommand</item>
+                <item name="settlement" xsi:type="string">AuthorizecimCaptureCommand</item>
+                <!--<item name="refund" xsi:type="string">AuthorizecimRefundCommand</item>-->
+                <item name="void" xsi:type="string">AuthorizecimVoidCommand</item>
+                <item name="cancel" xsi:type="string">AuthorizecimVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize transaction commands -->
+    <virtualType name="AuthorizecimEcheckAuthorizeCommand" type="AuthorizecimAuthorizeCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuthorizecimEcheckAuthorizeRequest</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimEcheckAuthorizeRequest" type="AuthorizecimAuthorizeRequest">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transactiondata" xsi:type="string">Rootways\Authorizecim\Gateway\Request\EcheckTransactionDataBuilder</item>
+                <item name="vault" xsi:type="string">Rootways\Authorizecim\Gateway\Request\NullDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Strategy commands -->
+    <virtualType name="AuthorizecimEcheckCaptureStrategyCommand" type="Rootways\Authorizecim\Gateway\Command\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuthorizecimEcheckCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+
+
+    <!-- Debug Log -->
+    <virtualType name="Rootways\AuthorizecimPayment\Model\Method\VirtualDebug" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/rw_authorize_payment.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Rootways\Authorizecim\Model\Method\VirtualLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Rootways\AuthorizecimPayment\Model\Method\VirtualDebug</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Rootways\Authorizecim\Model\Method\Logger">
+        <arguments>
+            <argument name="logger" xsi:type="object">Rootways\Authorizecim\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+</config>

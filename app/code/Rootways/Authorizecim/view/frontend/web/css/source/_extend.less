@@ -1,0 +1,56 @@
+/**
+ * Apple Pay button
+ */
+.rwauthorizecim-applepay-container-product {
+    display: inline-block;
+
+    .rwauthorizecim-apple-pay-button {padding: 10px 0px;margin: 0;margin-bottom: 15px;}
+}
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+    .braintree-applepay-container-product {
+        display: block;
+        .rwauthorizecim-apple-pay-button {width: 100%;}
+    }
+}
+.rwauthorizecim-apple-pay-button {
+    -webkit-appearance: -apple-pay-button;
+    -apple-pay-button-type: plain;
+    display: block;
+    width: 200px;
+    min-height: 40px;
+    /*border: 1px solid black;*/
+    background-image: -webkit-named-image(apple-pay-logo-black);
+    background-size: 100% 60%;
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position: 50% 50%;
+    /*border-radius: 5px;*/
+    padding: 2px;
+    margin: 20px auto;
+    transition: background-color .15s;
+    cursor: pointer;
+}
+.actions-toolbar .rwauthorizecim-apple-pay-button {width: 100%;padding: 20px 0 20px 0;}
+.actions-toolbar .rwauthorizecim-apple-pay-button span {display: none;}
+.rw-save-cc {margin-bottom: 20px;}
+.rootways_authorizecim_option_hosted_iframe_wrapper.disabled,
+.rootways_authorizecim_option_hosted_iframe_wrapper.agreement_missed,
+.rootways_authorizecim_option_visa_iframe_wrapper.disabled,
+.rootways_authorizecim_option_visa_iframe_wrapper.agreement_missed,
+.rootways_authorizecim_option_applepay_iframe_wrapper.disabled,
+.rootways_authorizecim_option_applepay_iframe_wrapper.agreement_missed{opacity: 0.5;cursor: default;pointer-events: none;}
+#rootways_authorizecim_option_visa_wrapper .payment-method-title label span,
+#rootways_authorizecim_option_wrapper .ccLogoHide .credit-card-types {display: none;}
+#rootways_authorizecim_option_visa_wrapper .payment-method-title label img {display: inline-block;vertical-align: middle;}
+#rootways_authorizecim_option_visa_wrapper .payment-method-title input {vertical-align: middle;}
+
+
+#rootways_authorizecim_option_wrapper {position: relative;}
+#rootways_authorizecim_option_wrapper .top_cc_type {position: absolute;right: 0;top: 10px;}
+#rootways_authorizecim_option_wrapper .top_cc_type span._active {filter: grayscale(0);opacity: 1;transition: 0.3s all linear;}
+#rootways_authorizecim_option_wrapper .top_cc_type span._inactive {transition: 0.3s all linear;opacity: 0.5;}
+#rootways_authorizecim_option_wrapper .top_cc_type span {filter: grayscale(1);opacity: 1;transition: 0.3s all linear;}
+
+@media (max-width:1023px){
+    #rootways_authorizecim_option_wrapper .top_cc_type{ position: relative;}
+}

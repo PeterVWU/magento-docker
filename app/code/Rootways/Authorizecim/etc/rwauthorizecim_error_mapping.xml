@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/error_mapping.xsd">
+    <message_list>
+        <message code="0" translate="true">Unknown Error.</message>
+        <message code="2" translate="true">This transaction has been declined.</message>
+        <message code="3" translate="true">This transaction has been declined.</message>
+        <message code="4" translate="true">This transaction has been declined. The code returned from the processor indicating that the card used needs to be picked up.</message>
+        <message code="5" translate="true">A valid amount is required. The value submitted in the amount field did not pass validation for a number.</message>
+        <message code="6" translate="true">The credit card number is invalid.</message>
+        <message code="7" translate="true">Credit card expiration date is invalid. The format of the date submitted was incorrect.</message>
+        <message code="8" translate="true">The credit card has expired.</message>
+        <message code="9" translate="true">The ABA code is invalid. The value submitted in the routingNumber field did not pass validation or was not for a valid financial institution.</message>
+        <message code="10" translate="true">The account number is invalid. The value submitted in the accountNumber field did not pass validation.</message>
+        <message code="11" translate="true">A duplicate transaction has been submitted. A transaction with identical amount and credit card information was submitted within the previous two minutes.</message>
+        <message code="12" translate="true">An authorization code is required but not present. The transaction request required the field authCode but either it was not submitted, or it was submitted without a value.</message>
+		<message code="13" translate="true">The merchant login ID or password is invalid or the account is inactive.</message>
+		<message code="14" translate="true">The referrer, relay response or receipt link URL is invalid. Applicable only to SIM API. The Relay Response or Referrer URL does not match the merchant configured value(s).</message>
+        <message code="15" translate="true">The transaction ID is invalid or not present. The transaction ID value is non-numeric or was not present for a transaction that requires it (i.e., VOID, PRIOR_AUTH_CAPTURE, and CREDIT).</message>
+		<message code="16" translate="true">The transaction cannot be found, or it is expired. If you are getting this error at the time of VOID, then use Cancel instead of VOID. The transaction ID sent in was properly formatted but the gateway had no record of the transaction.</message>
+		<message code="17" translate="true">The merchant does not accept this type of credit card. If you encounter this error on an Authorize.Net Sandbox account, please contact Developer Support to enable this card type on your account.</message>
+		<message code="18" translate="true">ACH transactions are not accepted by this merchant. The merchant does not accept electronic checks.</message>
+		<message code="19" translate="true">An error occurred during processing. Please try again. This error message is displayed when there is a connection issue between Authorize.Net and the credit card processor.</message>
+		<message code="20" translate="true">An error occurred during processing. Please try again. This error message is displayed when there is a connection issue between Authorize.Net and the credit card processor.</message>
+		<message code="21" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="22" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="23" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="24" translate="true">The Elavon bank number or terminal ID is incorrect. Call Merchant Service Provider.</message>
+		<message code="25" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="26" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="27" translate="true">The transaction has been declined because of an AVS mismatch. The address provided does not match billing address of cardholder.</message>
+		<message code="28" translate="true">The merchant does not accept this type of credit card. If you encounter this error on an Authorize.Net Sandbox account, please contact Developer Support for assistance.</message>
+		<message code="29" translate="true">The Paymentech identification numbers are incorrect. Call Merchant Service Provider. Invalid Paymentech client number, merchant number or terminal number.</message>
+		<message code="30" translate="true">The configuration with processor is invalid. Call Merchant Service Provider.</message>
+		<message code="31" translate="true">The FDC Merchant ID or Terminal ID is incorrect. Call Merchant Service Provider. The merchant was incorrectly set up at the processor.</message>
+		<message code="32" translate="true">The merchant password is invalid or not present.</message>
+		<message code="33" translate="true">Require field is empty, it cannot be left blank. This error indicates that a field the merchant specified as required was not filled in.</message>
+		<message code="34" translate="true">The VITAL identification numbers are incorrect. Call Merchant Service Provider. The merchant was incorrectly set up at the processor.</message>
+		<message code="35" translate="true">An error occurred during processing. Call Merchant Service Provider. The merchant was incorrectly set up at the processor.</message>
+		<message code="36" translate="true">The authorization was approved but settlement failed. The customer was approved at the time of authorization, but failed at settlement.</message>
+		<message code="37" translate="true">The credit card number is invalid.</message>
+		<message code="38" translate="true">The Global Payment System identification numbers are incorrect. Call Merchant Service Provider. The merchant was incorrectly set up at the processor.</message>
+        <message code="39" translate="true">The supplied currency code is either invalid, not supported, not allowed for this merchant or doesnt have an exchange rate. The supplied currency code is either invalid, not supported, not allowed for this merchant or does not have an exchange rate.</message>
+        <message code="40" translate="true">This transaction must be encrypted. Insecure transaction.</message>
+		<message code="41" translate="true">This transaction has been declined. Only merchants set up for the FraudScreen.Net service would receive this decline. This code will be returned if a given transaction fraud score is higher than the threshold set by the merchant.</message>
+		<message code="42" translate="true">There is missing or invalid information in a required field. This is applicable only to merchants processing through the Wells Fargo SecureSource product who have requirements for transaction submission that are different from merchants not processing through Wells Fargo.</message>
+		<message code="43" translate="true">The merchant was incorrectly set up at the processor. Call Merchant Service Provider. The merchant was incorrectly set up at the processor.</message>
+		<message code="44" translate="true">This transaction has been declined. The card code submitted with the transaction did not match the card code on file at the card issuing bank and the transaction was declined.</message>
+		<message code="45" translate="true">This transaction has been declined. This error would be returned if the transaction received a code from the processor that matched the rejection criteria set by the merchant for both the AVS and Card Code filters.</message>
+		<message code="46" translate="true">Your session has expired or does not exist. You must log in again to continue working.</message>
+		<message code="47" translate="true">The amount requested for settlement cannot be greater than the original amount authorized. This occurs if the merchant tries to capture funds greater than the amount of the original authorization-only transaction.</message>
+		<message code="48" translate="true">This processor does not accept partial reversals. The merchant attempted to settle for less than the originally authorized amount.</message>
+		<message code="49" translate="true">The transaction amount submitted was greater than the maximum amount allowed.</message>
+		<message code="50" translate="true">This transaction is awaiting settlement and cannot be refunded. Credits or refunds may only be performed against settled transactions. The transaction against which the credit/refund was submitted has not been settled, so a credit cannot be issued.</message>
+		<message code="51" translate="true">The sum of all credits against this transaction is greater than the original transaction amount.</message>
+		<message code="52" translate="true">The transaction was authorized but the client could not be notified, it will not be settled.</message>
+		<message code="53" translate="true">The transaction type is invalid for ACH transactions. If payment type is bankAccount, transactionType cannot be set to captureOnlyTransaction.</message>
+		<message code="54" translate="true">The referenced transaction does not meet the criteria for issuing a credit. The referenced transaction does not meet the criteria for issuing a credit. It may be unsettled, an invalid type, the wrong currency, an invalid reference transaction ID or settled more than 180 days ago.</message>
+		<message code="55" translate="true">The sum of credits against the referenced transaction would exceed original debit amount. The transaction is rejected if the sum of this credit and prior credits exceeds the original debit amount.</message>
+		<message code="56" translate="true">Credit card transactions are not accepted by this merchant. The merchant processes eCheck.Net transactions only and does not accept credit cards.</message>
+		<message code="57" translate="true">An error occurred during processing. Please try again. This error is caused when a transaction is submitted with data that the credit card processor does not recognize or is unable to interpret.</message>
+		<message code="58" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="59" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="60" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="61" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="62" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="63" translate="true">An error occurred during processing. Please try again. If you receive an Error 63 repeatedly, please check that the Merchant Business country is set correctly.</message>
+		<message code="64" translate="true">The referenced transaction was not approved. This error is applicable to Wells Fargo SecureSource merchants only. Credits or refunds cannot be issued against transactions that were not authorized.</message>
+		<message code="65" translate="true">This transaction has been declined. The transaction was declined because the merchant configured their account through the Merchant Interface to reject transactions with certain values for a Card Code mismatch.</message>
+		<message code="66" translate="true">This transaction cannot be accepted for processing. Transaction was submitted using HTTP GET which does not meet payment gateway security guidelines.</message>
+		<message code="67" translate="true">The given transaction type is not supported for this merchant. This error code is applicable to merchants using the Wells Fargo SecureSource product only. This product does not allow transactions of type CAPTURE_ONLY.</message>
+		<message code="68" translate="true">The version parameter is invalid. The value submitted in x_version was invalid.</message>
+		<message code="69" translate="true">The transaction type is invalid. The value submitted in transactionType was invalid.</message>
+		<message code="70" translate="true">The transaction method is invalid. The value submitted in x_method was invalid.</message>
+		<message code="71" translate="true">The bank account type is invalid. The value submitted in accountType was invalid.</message>
+		<message code="72" translate="true">The authorization code is invalid. The value submitted in authCode was more than six characters in length.</message>
+		<message code="73" translate="true">The drivers license date of birth is invalid. The format of the value submitted in x_drivers_license_num was invalid.</message>
+		<message code="74" translate="true">The duty amount is invalid. The value submitted in duty failed format validation.</message>
+		<message code="75" translate="true">The freight amount is invalid. The value submitted in freight failed format validation.</message>
+		<message code="76" translate="true">The tax amount is invalid. The value submitted in tax failed format validation.</message>
+		<message code="77" translate="true">The SSN or tax ID is invalid. The value submitted in x_customer_tax_id failed validation.</message>
+		<message code="78" translate="true">The card code is invalid. The value submitted in cardCode failed format validation.</message>
+		<message code="79" translate="true">The drivers license number is invalid. The value submitted in x_drivers_license_num failed format validation.</message>
+		<message code="80" translate="true">The drivers license state is invalid. The value submitted in x_drivers_license_state failed format validation.</message>
+		<message code="81" translate="true">The requested form type is invalid. The merchant requested an integration method not compatible with the AIM API.</message>
+		<message code="82" translate="true">Scripts are only supported in version 2.5. The system no longer supports version 2.5, requests cannot be posted to scripts.</message>
+		<message code="83" translate="true">The requested script is either invalid or no longer supported. The system no longer supports version 2.5, requests cannot be posted to scripts.</message>
+		<message code="84" translate="true">The device type is invalid or missing. Invalid value for deviceType.</message>
+		<message code="85" translate="true">The market type is invalid. Invalid value for marketType.</message>
+		<message code="86" translate="true">The Response Format is invalid. Invalid value for x_response_format.</message>
+		<message code="87" translate="true">Transactions of this market type cannot be processed on this system.</message>
+		<message code="88" translate="true">Track1 data is not in a valid format. Invalid value for track1.</message>
+		<message code="89" translate="true">Track2 data is not in a valid format. Invalid value for track2.</message>
+		<message code="90" translate="true">ACH transactions cannot be accepted by this system. ACH transactions cannot be processed using a card present account.</message>
+		<message code="91" translate="true">Version 2.5 is no longer supported.</message>
+		<message code="92" translate="true">The gateway no longer supports the requested method of integration.</message>
+		<message code="93" translate="true">A valid country is required.  This code is applicable to Wells Fargo SecureSource merchants only. Country is a required field and must contain the value of a supported country.</message>
+		<message code="94" translate="true">The shipping state or country is invalid. This code is applicable to Wells Fargo SecureSource merchants only.</message>
+		<message code="95" translate="true">A valid state is required. This code is applicable to Wells Fargo SecureSource merchants only.</message>
+		<message code="96" translate="true">This country is not authorized for buyers. This code is applicable to Wells Fargo SecureSource merchants only. Country is a required field and must contain the value of a supported country.</message>
+		<message code="97" translate="true">This transaction cannot be accepted. Applicable only to the SIM API. Fingerprints are only valid for a short period of time. This code indicates that the transaction fingerprint has expired.</message>
+		<message code="98" translate="true">This transaction cannot be accepted. Applicable only to the SIM API. The transaction fingerprint has already been used.</message>
+		<message code="99" translate="true">This transaction cannot be accepted. Applicable only to the SIM API. The server-generated fingerprint does not match the merchant-specified fingerprint in the x_fp_hash field.</message>
+		<message code="100" translate="true">The eCheck type parameter is invalid. Applicable only to eCheck.Net. The value specified in the echeckType field is invalid.</message>
+		<message code="101" translate="true">The given name on the account and/or the account type does not match the actual account. Applicable only to eCheck.Net. The specified name on the account and/or the account type do not match the NOC record for this account.</message>
+		<message code="102" translate="true">This request cannot be accepted. A transaction key was submitted with this WebLink request.</message>
+		<message code="103" translate="true">This transaction cannot be accepted.</message>
+		<message code="104" translate="true">The transaction is currently under review. Applicable only to eCheck.Net. The value submitted for country failed validation.</message>
+		<message code="105" translate="true">The transaction is currently under review. Applicable only to eCheck.Net. The values submitted for city and country failed validation.</message>
+		<message code="106" translate="true">The transaction is currently under review. Applicable only to eCheck.Net. The value submitted for company failed validation.</message>
+		<message code="107" translate="true">The transaction is currently under review. The value submitted for bank account name failed validation.</message>
+		<message code="108" translate="true">The transaction is currently under review. Applicable only to eCheck.Net. The values submitted for firstName and lastName failed validation.</message>
+		<message code="109" translate="true">The transaction is currently under review. Applicable only to eCheck.Net. The values submitted for firstName and lastName failed validation.</message>
+		<message code="110" translate="true">The transaction is currently under review. The value submitted for accountName does not contain valid characters.</message>
+		<message code="111" translate="true">A valid billing country is required. This code is applicable to Wells Fargo SecureSource merchants only.</message>
+		<message code="112" translate="true">A valid billing state/province is required. This code is applicable to Wells Fargo SecureSource merchants only.</message>
+		<message code="113" translate="true">The commercial card type is invalid.</message>
+		<message code="114" translate="true">The merchant account is in test mode. This automated payment will not be processed. The payment gateway account is in test mode. All automated payments are skipped when in test mode.</message>
+		<message code="115" translate="true">The merchant account is not active. This automated payment will not be processed. The payment gateway account is not active. All automated payments are skipped when an account is not active.</message>
+		<message code="116" translate="true">The authentication indicator is invalid. This code is applicable only to merchants that include the authenticationIndicator in the transaction request. The ECI value for a Visa transaction or the UCAF indicator for a Mastercard transaction submitted in the authenticationIndicator field is invalid.</message>
+		<message code="117" translate="true">The cardholder authentication value is invalid. This code is applicable only to merchants that include the cardholderAuthenticationValue in the transaction request. The CAVV for a Visa transaction or the AVV/UCAF for a Mastercard transaction is invalid or contains an invalid character.</message>
+		<message code="118" translate="true">The combination of card type, authentication indicator and cardholder authentication value is invalid. This code is applicable only to merchants that include the authenticationIndicator and cardholderAuthenticationValue in the transaction request. The combination of authenticationIndicator and cardholderAuthenticationValue is invalid.</message>
+		<message code="119" translate="true">Transactions having cardholder authentication values cannot be marked as recurring. This code is applicable only to merchants that include the authenticationIndicator and recurringBilling in the transaction request. Transactions submitted with a value in authenticationIndicator while recurringBilling is set to true will be rejected.</message>
+		<message code="120" translate="true">An error occurred during processing. Please try again. The system-generated void for the original timed-out transaction failed. The original transaction timed out while waiting for a response from the authorizer.</message>
+		<message code="121" translate="true">An error occurred during processing. Please try again. The system-generated void for the original errored transaction failed. The original transaction experienced a database error.</message>
+		<message code="122" translate="true">An error occurred during processing. Please try again. The system-generated void for the original errored transaction failed. The original transaction experienced a processing error.</message>
+		<message code="123" translate="true">This account has not been given the permission(s) required for this request. The transaction request must include the API login ID associated with the payment gateway account.</message>
+		<message code="124" translate="true">This processor does not accept recurring transactions.</message>
+		<message code="125" translate="true">The surcharge amount is invalid.</message>
+		<message code="126" translate="true">The Tip amount is invalid.</message>
+		<message code="127" translate="true">The transaction resulted in an AVS mismatch. The address provided does not match billing address of cardholder. The system-generated void for the original AVS-rejected transaction failed.</message>
+		<message code="128" translate="true">This transaction cannot be processed. The customer financial institution does not currently allow transactions for this account.</message>
+		<message code="130" translate="true">This merchant account has been closed. The payment gateway account status is Blacklisted.</message>
+		<message code="131" translate="true">This transaction cannot be accepted at this time. The payment gateway account status is Suspended-STA.</message>
+		<message code="132" translate="true">This transaction cannot be accepted at this time. The payment gateway account status is Suspended - Blacklist.</message>
+		<message code="141" translate="true">This transaction has been declined. The system-generated void for the original FraudScreen-rejected transaction failed.</message>
+		<message code="145" translate="true">This transaction has been declined. The system-generated void for the original card code-rejected and AVS-rejected transaction failed.</message>
+		<message code="152" translate="true">The transaction was authorized but the client could not be notified, it will not be settled. The system-generated void for the original transaction failed. The response for the original transaction could not be communicated to the client.</message>
+		<message code="153" translate="true">There was an error processing the payment data. Set marketType to 0 to flag the transaction as e-commerce.</message>
+		<message code="154" translate="true">Processing Apple Payments is not enabled for this merchant account.</message>
+		<message code="155" translate="true">This processor does not support this method of submitting payment data.</message>
+		<message code="156" translate="true">The cryptogram is either invalid or cannot be used in combination with other parameters.</message>
+		<message code="165" translate="true">This transaction has been declined. System void failed. CVV2 Code mismatch based on the CVV response and the merchant settings.</message>
+		<message code="170" translate="true">An error occurred during processing. Please contact the merchant. Concord EFS - Provisioning at the processor has not been completed.</message>
+		<message code="171" translate="true">An error occurred during processing. Please contact the merchant. Concord EFS - This request is invalid.</message>
+		<message code="172" translate="true">An error occurred during processing. Please contact the merchant. Concord EFS - The store ID is invalid.</message>
+		<message code="173" translate="true">An error occurred during processing. Please contact the merchant. Concord EFS - The store key is invalid.</message>
+		<message code="174" translate="true">The transaction type is invalid. Please contact the merchant. Concord EFS - This transaction type is not accepted by the processor.</message>
+		<message code="175" translate="true">This processor does not allow voiding of credits. Concord EFS - This transaction is not allowed. The Concord EFS processing platform does not support voiding credit transactions. Please debit the credit card instead of voiding the credit.</message>
+		<message code="180" translate="true">An error occurred during processing. Please try again. The processor response format is invalid.</message>
+		<message code="181" translate="true">An error occurred during processing. Please try again. The system-generated void for the original invalid transaction failed. (The original transaction included an invalid processor response format.)</message>
+		<message code="182" translate="true">One or more of the sub-merchant values are invalid.</message>
+		<message code="183" translate="true">One or more of the required sub-merchant values are missing.</message>
+		<message code="184" translate="true">Invalid Token Requestor Name.</message>
+		<message code="185" translate="true">This transaction cannot be processed. Merchant is not configured for VPOS.</message>
+		<message code="186" translate="true">Invalid Token Requestor ID Length.</message>
+		<message code="187" translate="true">Invalid Token Requestor ECI Length.</message>
+		<message code="191" translate="true">This transaction has been declined.</message>
+		<message code="192" translate="true">An error occurred during processing. Please try again.</message>
+		<message code="193" translate="true">The transaction is currently under review.</message>
+		<message code="195" translate="true">One or more of the HTML type configuration fields do not appear to be safe.</message>
+		<message code="200" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The credit card number is invalid.</message>
+		<message code="201" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The expiration date is invalid.</message>
+		<message code="202" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The transaction type is invalid.</message>
+		<message code="203" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The value submitted in the amount field is invalid.</message>
+		<message code="204" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The department code is invalid.</message>
+		<message code="205" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The value submitted in the merchant number field is invalid.</message>
+		<message code="206" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The merchant is not on file.</message>
+		<message code="207" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The merchant account is closed.</message>
+		<message code="208" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The merchant is not on file.</message>
+		<message code="209" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. Communication with the processor could not be established.</message>
+		<message code="210" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The merchant type is incorrect.</message>
+		<message code="211" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The cardholder is not on file.</message>
+		<message code="212" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The bank configuration is not on file.</message>
+		<message code="213" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The merchant assessment code is incorrect.</message>
+		<message code="214" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. This function is currently unavailable.</message>
+		<message code="215" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The encrypted PIN field format is invalid.</message>
+		<message code="216" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The ATM term ID is invalid.</message>
+		<message code="217" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. This transaction experienced a general message format problem.</message>
+		<message code="218" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The PIN block format or PIN availability value is invalid.</message>
+		<message code="219" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The ETC void is unmatched.</message>
+		<message code="220" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The primary CPU is not available.</message>
+		<message code="221" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. The SE number is invalid.</message>
+		<message code="222" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. Duplicate auth request (from INAS).</message>
+		<message code="223" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. This transaction experienced an unspecified error.</message>
+		<message code="224" translate="true">This transaction has been declined. This error code applies only to merchants on FDC Omaha. Please re-enter the transaction.</message>
+		<message code="225" translate="true">This transaction cannot be processed. The transaction has an invalid dynamic currency conversion (DCC) action.</message>
+		<message code="226" translate="true">This transaction cannot be processed. Incomplete set of Dynamic Currency Conversion (DCC) parameters.</message>
+		<message code="227" translate="true">This transaction cannot be processed. Merchant is not configured for Dynamic Currency Conversion (DCC).</message>
+		<message code="228" translate="true">This transaction cannot be processed. Dynamic Currency Conversion (DCC) is not allowed for this transaction type.</message>
+		<message code="229" translate="true">Conversion rate for this card is available.</message>
+		<message code="230" translate="true">This transaction cannot be processed. Transaction could not be found.</message>
+		<message code="231" translate="true">This transaction cannot be processed. Incoming data is different than the referenced Dynamic Currency Conversion (DCC) transaction.</message>
+		<message code="232" translate="true">This transaction cannot be processed. Merchant is not configured for Dynamic Currency Conversion (DCC).</message>
+		<message code="233" translate="true">This transaction cannot be processed. Cannot perform Dynamic Currency Conversion (DCC) action on this transaction.</message>
+		<message code="234" translate="true">This transaction cannot be processed. This transaction has been voided.</message>
+		<message code="235" translate="true">This transaction cannot be processed. This transaction has been captured previously.</message>
+		<message code="236" translate="true">This transaction cannot be processed. Dynamic Currency Conversion (DCC) data for the referenced transaction is not available.</message>
+		<message code="237" translate="true">The referenced transaction has expired.</message>
+		<message code="238" translate="true">This transaction cannot be processed. The transaction version does not support Dynamic Currency Conversion (DCC).</message>
+		<message code="239" translate="true">This transaction cannot be processed. The response format for this transaction does not support Dynamic Currency Conversion (DCC).</message>
+		<message code="240" translate="true">This transaction cannot be processed. Currency for Dynamic Currency Conversion (DCC) transactions must be US dollars.</message>
+		<message code="241" translate="true">This transaction cannot be processed. Invalid response from card processor.</message>
+		<message code="242" translate="true">This transaction cannot be processed. Recurring billing flag not allowed on Dynamic Currency Conversion (DCC).</message>
+		<message code="243" translate="true">Recurring billing is not allowed for this eCheck.Net type. The combination of values submitted for recurringBilling and echeckType is not allowed.</message>
+		<message code="244" translate="true">This eCheck.Net type is not allowed for this Bank Account Type. The combination of values submitted for accountType and echeckType is not allowed.</message>
+		<message code="245" translate="true">This eCheck.Net type is not allowed when using the payment gateway hosted payment form. The value submitted for echeckType is not allowed when using the payment gateway hosted payment form.</message>
+		<message code="246" translate="true">This eCheck.Net type is not allowed. The merchant payment gateway account is not enabled to submit the eCheck.Net type.</message>
+		<message code="247" translate="true">This eCheck.Net type is not allowed. The combination of values submitted for transactionType and echeckType is not allowed.</message>
+		<message code="248" translate="true">The check number is invalid. Invalid check number. Check numbers can only consist of letters and numbers, up to 15 characters.</message>
+		<message code="250" translate="true">This transaction has been declined. This transaction was submitted from a blocked IP address.</message>
+		<message code="251" translate="true">This transaction has been declined. The transaction was declined as a result of triggering a Fraud Detection Suite filter.</message>
+		<message code="252" translate="true">Your order has been received. Thank you for your business! The transaction was accepted, but is being held for merchant review. The merchant may customize the customer response in the Merchant Interface.</message>
+		<message code="253" translate="true">Your order has been received. Thank you for your business! The transaction was accepted and was authorized, but is being held for merchant review. The merchant may customize the customer response in the Merchant Interface.</message>
+		<message code="254" translate="true">This transaction has been declined. The transaction was declined after manual review.</message>
+		<message code="260" translate="true">Reversal not supported for this transaction type. Only authorizations and credits can be reversed.</message>
+		<message code="261" translate="true">An error occurred during processing. Please try again. The transaction experienced an error during sensitive data encryption and was not processed. Please try again.</message>
+		<message code="262" translate="true">The PayformMask is invalid.</message>
+		<message code="265" translate="true">This transaction cannot be processed. The transaction was submitted with an invalid Solution ID. For details on how to register and submit a Solution ID, please see The Solution ID Implementation Guide.</message>
+		<message code="270" translate="true">Line item is invalid. A value submitted in lineItem for the item referenced is invalid.</message>
+		<message code="271" translate="true">The number of line items submitted is not allowed. The number of line items submitted in lineItem exceeds the allowed maximum of 30.</message>
+		<message code="280" translate="true">The auction platform name is invalid.</message>
+		<message code="281" translate="true">The auction platform ID is invalid.</message>
+		<message code="282" translate="true">The auction listing type is invalid.</message>
+		<message code="283" translate="true">The auction listing ID is invalid.</message>
+		<message code="284" translate="true">The auction seller ID is invalid.</message>
+		<message code="285" translate="true">The auction buyer ID is invalid.</message>
+		<message code="286" translate="true">One or more required auction values were not submitted.</message>
+		<message code="287" translate="true">The combination of auction platform ID and auction platform name is invalid.</message>
+		<message code="288" translate="true">This transaction cannot be accepted.</message>
+		<message code="289" translate="true">This processor does not accept zero dollar authorization for this card type.</message>
+		<message code="290" translate="true">There is one or more missing or invalid required fields.</message>
+		<message code="295" translate="true">The amount of this request was only partially approved on the given prepaid card. An additional payment is required to fulfill the balance of this transaction.</message>
+		<message code="296" translate="true">The specified SplitTenderID is invalid.</message>
+		<message code="297" translate="true">Transaction ID and Split Tender ID cannot both be used in the same request.</message>
+		<message code="298" translate="true">This order has already been released or voided therefore new transaction associations cannot be accepted.</message>
+		<message code="300" translate="true">The device ID is invalid. Invalid deviceId value.</message>
+		<message code="301" translate="true">The device batch ID is invalid. Invalid batchId value.</message>
+		<message code="302" translate="true">The reversal flag is invalid. Invalid x_reversal value.</message>
+		<message code="303" translate="true">The device batch is full. Please close the batch. The current device batch must be closed manually from the POS device.</message>
+		<message code="304" translate="true">The original transaction is in a closed batch. The original transaction has been settled and cannot be reversed.</message>
+		<message code="305" translate="true">The merchant is configured for auto-close. This merchant is configured for auto-close and cannot manually close batches.</message>
+		<message code="306" translate="true">The batch is already closed.</message>
+		<message code="307" translate="true">The reversal was processed successfully.</message>
+		<message code="308" translate="true">Original transaction for reversal not found. The transaction submitted for reversal was not found.</message>
+		<message code="309" translate="true">The device has been disabled.</message>
+		<message code="310" translate="true">This transaction has already been voided.</message>
+		<message code="311" translate="true">This transaction has already been captured.</message>
+		<message code="312" translate="true">The specified security code was invalid. The SIM hosted payment form features a Security Code option (sometimes called CAPTCHA) used to confirm that the payment is being entered by a human being.</message>
+		<message code="313" translate="true">A new security code was requested. The SIM hosted payment form features a Security Code option (sometimes called CAPTCHA) used to confirm that the payment is being entered by a human being.</message>
+		<message code="314" translate="true">This transaction cannot be processed.</message>
+		<message code="315" translate="true">The credit card number is invalid. This is a processor-issued decline.</message>
+		<message code="316" translate="true">Credit card expiration date is invalid. This is a processor-issued decline.</message>
+		<message code="317" translate="true">The credit card has expired. This is a processor-issued decline.</message>
+		<message code="318" translate="true">A duplicate transaction has been submitted. This is a processor-issued decline.</message>
+		<message code="319" translate="true">The transaction cannot be found. This is a processor-issued decline.</message>
+		<message code="320" translate="true">The device identifier is either not registered or not enabled.</message>
+		<message code="325" translate="true">The request data did not pass the required fields check for this application. The request is missing one or more required fields.</message>
+		<message code="326" translate="true">The request field(s) are either invalid or missing.</message>
+		<message code="327" translate="true">The void request failed. Either the original transaction type does not support void, or the transaction is in the process of being settled.</message>
+		<message code="328" translate="true">A validation error occurred at the processor.</message>
+		<message code="330" translate="true">V.me transactions are not accepted by this merchant.</message>
+		<message code="331" translate="true">The x_call_id value is missing.</message>
+		<message code="332" translate="true">The x_call_id value is not found or invalid.</message>
+		<message code="333" translate="true">A validation error was returned from V.me.</message>
+		<message code="334" translate="true">The V.me transaction is in an invalid state.</message>
+		<message code="339" translate="true">Use x_method to specify method or send only x_call_id or card/account information.</message>
+		<message code="340" translate="true">V.me by Visa does not support voids on captured or credit transactions. Please allow the transaction to settle.</message>
+        <message code="341" translate="true">The x_discount value is invalid.</message>
+		<message code="342" translate="true">The x_giftwrap value is invalid.</message>
+		<message code="343" translate="true">The x_subtotal value is invalid.</message>
+		<message code="344" translate="true">The x_misc value is invalid.</message>
+		<message code="350" translate="true">Country must be a valid two or three-character value if specified.</message>
+		<message code="351" translate="true">Employee ID must be 1.</message>
+		<message code="355" translate="true">An error occurred while parsing the EMV data.</message>
+		<message code="356" translate="true">EMV-based transactions are not currently supported for this processor and card type.</message>
+		<message code="357" translate="true">Opaque Descriptor is required.</message>
+		<message code="358" translate="true">EMV data is not supported with this transaction type.</message>
+		<message code="359" translate="true">EMV data is not supported with this market type.</message>
+		<message code="360" translate="true">An error occurred while decrypting the EMV data.</message>
+		<message code="361" translate="true">The EMV version is invalid.</message>
+		<message code="362" translate="true">The EMV version is required.</message>
+		<message code="363" translate="true">The POS Entry Mode value is invalid.</message>
+		<message code="370" translate="true">Signature data is too large.</message>
+		<message code="371" translate="true">Signature must be PNG formatted data.</message>
+		<message code="375" translate="true">Terminal/lane number must be numeric.</message>
+		<message code="380" translate="true">KSN is duplicated.</message>
+		<message code="901" translate="true">This transaction cannot be accepted at this time due to system maintenance. Please try again later.</message>
+		<message code="2000" translate="true">Need payer consent. The value of the secureAcceptanceURL field, provided in Authorization Only or Authorization and Capture service calls, is required for the follow-on calls such as Authorization Only, Continued and Authorization and Capture, Continued.</message>
+		<message code="2001" translate="true">PayPal transactions are not accepted by this merchant.</message>
+		<message code="2002" translate="true">PayPal transactions require x_version of at least 3.1.</message>
+		<message code="2003" translate="true">Request completed successfully.</message>
+		<message code="2004" translate="true">Success URL is required. PayPal transactions require valid URL for success_url</message>
+		<message code="2005" translate="true">Cancel URL is required. PayPal transactions require valid URL for cancel_url</message>
+		<message code="2006" translate="true">Payer ID is required.</message>
+		<message code="2007" translate="true">This processor does not accept zero dollar authorizations.</message>
+		<message code="2008" translate="true">The referenced transaction does not meet the criteria for issuing a Continued Authorization.</message>
+		<message code="2009" translate="true">The referenced transaction does not meet the criteria for issuing a Continued Authorization w/ Auto Capture.</message>
+		<message code="2100" translate="true">PayPal transactions require valid URL for success_url.</message>
+		<message code="2101" translate="true">PayPal transactions require valid URL for cancel_url.</message>
+		<message code="2102" translate="true">Payment not authorized. Payment has not been authorized by the user.</message>
+		<message code="2103" translate="true">This transaction has already been authorized.</message>
+		<message code="2104" translate="true">The totals of the cart item amounts do not match order amounts. Be sure the total of the payment detail item parameters add up to the order total.</message>
+		<message code="2105" translate="true">PayPal has rejected the transaction.Invalid Payer ID.</message>
+		<message code="2106" translate="true">PayPal has already captured this transaction.</message>
+		<message code="2107" translate="true">PayPal has rejected the transaction. This Payer ID belongs to a different customer.</message>
+		<message code="2108" translate="true">PayPal has rejected the transaction. x_paypal_hdrimg exceeds maximum allowable length.</message>
+		<message code="2109" translate="true">PayPal has rejected the transaction. x_paypal_payflowcolor must be a 6 character hexadecimal value.</message>
+		<message code="2200" translate="true">The amount requested for settlement cannot be different than the original amount authorized. Please void transaction if required. This error applies to WePay merchants only if the Prior Authorization Capture request amount is different than the Authorization Only request amount.</message>
+        <message code="I00001" translate="true">Successful. The request was processed successfully.</message>
+        <message code="I00002" translate="true">The subscription has already been canceled.</message>
+        <message code="I00003" translate="true">The record has already been deleted.</message>
+        <message code="I00004" translate="true">No records found. No records have been found that match your query.</message>
+        <message code="I00005" translate="true">The mobile device has been submitted for approval by the account administrator. The mobile device was successfully inserted into the database.</message>
+        <message code="I00006" translate="true">The mobile device is approved and ready for use. The mobile device was successfully registered and approved by the account administrator.</message>
+        <message code="I00007" translate="true">The Payment Gateway Account service (id=8) has already been accepted.</message>
+        <message code="I00008" translate="true">The Payment Gateway Account service (id=8) has already been declined.</message>
+        <message code="I00009" translate="true">The APIUser already exists.</message>
+        <message code="I00010" translate="true">The merchant is activated successfully.</message>
+        <message code="I00011" translate="true">The merchant is not activated.</message>
+        <message code="I99999" translate="true">This feature has not yet been completed. One day it will be but it looks like today is not that day. This is a work in progress. This message will not be released to production. It is just a dev placeholder.</message>
+        <message code="E00001" translate="true">An error occurred during processing. Please try again. An unexpected system error occurred while processing this request.</message>
+        <message code="E00002" translate="true">The content-type specified is not supported. The only supported content-types are text/xml and application/xml.</message>
+        <message code="E00003" translate="true">An error occurred while parsing the XML request. This is the result of an XML parser error.</message>
+        <message code="E00004" translate="true">The name of the requested API method is invalid. The name of the root node of the XML request is the API method being called. It is not valid.</message>
+        <message code="E00005" translate="true">The transaction key or API key is invalid or not present. User authentication requires a valid value for transaction key or API key.</message>
+        <message code="E00006" translate="true">The API user name is invalid or not present. User authentication requires a valid value for API user name.</message>
+        <message code="E00007" translate="true">User authentication failed due to invalid authentication values. The API user name is invalid and/or the transaction key or API key is invalid.</message>
+		<message code="E00008" translate="true">User authentication failed. The account or API user is inactive. The payment gateway, reseller, or user account is not currently active.</message>
+        <message code="E00009" translate="true">The payment gateway account is in Test Mode. The request cannot be processed. Please disable Test Mode from your authorize.net merchant interface.</message>
+        <message code="E00010" translate="true">User authentication failed. You do not have the appropriate permissions. The user does not have permission to call the API.</message>
+        <message code="E00011" translate="true">Access denied. You do not have the appropriate permissions. The user does not have permission to call the API method.</message>
+        <message code="E00012" translate="true">A duplicate subscription already exists. A duplicate of the subscription was already submitted.</message>
+        <message code="E00013" translate="true">The field is invalid. One of the field values is not valid. The response text field should provide you the details of which field exactly is invalid so check the response text.</message>
+        <message code="E00014" translate="true">A required field is not present. One of the required fields was not present.</message>
+        <message code="E00015" translate="true">The field length is invalid. One of the fields has an invalid length.</message>
+        <message code="E00016" translate="true">The field type is invalid.</message>
+        <message code="E00017" translate="true">The start date cannot occur in the past. The subscription start date cannot occur before the subscription submission date.</message>
+        <message code="E00018" translate="true">The credit card expires before the subscription start date. The credit card is not valid as of the start date of the subscription.</message>
+        <message code="E00019" translate="true">The customer tax id or drivers license information is required.</message>
+        <message code="E00020" translate="true">The payment gateway account is not enabled for eCheck.Net subscriptions.</message>
+        <message code="E00021" translate="true">The payment gateway account is not enabled for credit card subscriptions. The payment gateway account is not set up to process credit card subscriptions.</message>
+        <message code="E00022" translate="true">The interval length cannot exceed 365 days or 12 months. The interval length must be 7 to 365 days or 1 to 12 months.</message>
+        <message code="E00023" translate="true">The subscription duration cannot exceed three years. The number of total occurrences cannot extend the duration of the subscription beyond three years from the start date.</message>
+        <message code="E00024" translate="true">Trial Occurrences is required when Trial Amount is specified. The number of trial occurrences cannot be zero if a valid trial amount is submitted.</message>
+        <message code="E00025" translate="true">Automated Recurring Billing is not enabled. The payment gateway account is not enabled for Automated Recurring Billing.</message>
+        <message code="E00026" translate="true">Both Trial Amount and Trial Occurrences are required. If either a trial amount or number of trial occurrences is specified then values for both must be submitted.</message>
+        <message code="E00027" translate="true">The transaction was unsuccessful. For more information, check the errorCode field in the response.</message>
+        <message code="E00028" translate="true">Trial Occurrences must be less than Total Occurrences. The number of trial occurrences specified must be less than the number of total occurrences specified.</message>
+        <message code="E00030" translate="true">The payment schedule is required. A payment schedule is required when creating a subscription.</message>
+        <message code="E00031" translate="true">The amount is required. The subscription amount is required when creating a subscription.</message>
+        <message code="E00032" translate="true">The start date is required. The subscription start date is required to create a subscription.</message>
+        <message code="E00033" translate="true">The start date cannot be changed. Once a subscription is created the start date cannot be changed.</message>
+        <message code="E00034" translate="true">The interval information cannot be changed. Once a subscription is created the interval cannot be changed.</message>
+        <message code="E00035" translate="true">The subscription cannot be found. The subscription ID for this request is not valid for this merchant.</message>
+        <message code="E00036" translate="true">The payment type cannot be changed. Changing the subscription payment type between credit card and eCheck.Net is not currently supported.</message>
+        <message code="E00037" translate="true">The subscription cannot be updated. Subscriptions that are expired, canceled or terminated cannot be updated.</message>
+        <message code="E00038" translate="true">The subscription cannot be canceled. Subscriptions that are expired or terminated cannot be canceled.</message>
+        <message code="E00039" translate="true">A duplicate record already exists. A duplicate of the customer profile, customer payment profile, or customer address was already submitted.</message>
+        <message code="E00040" translate="true">The record cannot be found. The customer profile ID, payment profile ID, shipping address ID, or transaction ID for this request is not valid for this merchant.</message>
+        <message code="E00041" translate="true">One or more fields must contain a value. All of the fields were empty or missing.</message>
+        <message code="E00042" translate="true">The maximum number of payment profiles for the customer profile has been reached.</message>
+        <message code="E00043" translate="true">The maximum number of shipping addresses for the customer profile has been reached.</message>
+        <message code="E00044" translate="true">Customer Information Manager is not enabled. The payment gateway account is not enabled for Customer Information Manager (CIM).</message>
+        <message code="E00045" translate="true">The root node does not reference a valid XML namespace.</message>
+        <message code="E00046" translate="true">Generic InsertNewMerchant failure.</message>
+        <message code="E00047" translate="true">Merchant Boarding API is not enabled. The reseller account is not enabled for Merchant Boarding API.</message>
+        <message code="E00048" translate="true">At least one payment method must be set in payment types or an echeck service must be provided. The merchant account must be set up to accept credit card payments, eCheck payments, or both.</message>
+        <message code="E00049" translate="true">The operation timed out before it could be completed. The database operation timed out before it could be completed.</message>
+        <message code="E00050" translate="true">Sell Rates cannot be less than Buy Rates. Cannot set a buyrate to less than the sellrate</message>
+        <message code="E00051" translate="true">The original transaction was not issued for this payment profile. If customer profile ID, payment profile ID, and shipping address ID are included, they must match the original transaction.</message>
+        <message code="E00052" translate="true">The maximum number of elements for an array has been reached.</message>
+        <message code="E00053" translate="true">Server too busy. The server is currently too busy, please try again later.</message>
+        <message code="E00054" translate="true">The mobile device is not registered with this merchant account. The mobile device identifier is not associated with the merchant account.</message>
+        <message code="E00055" translate="true">The mobile device has already been registered but is pending approval by the account administrator. The mobile device exists but is in a pending status.</message>
+        <message code="E00056" translate="true">The mobile device has been disabled for use with this account. The mobile device exists but has a status of disabled.</message>
+        <message code="E00057" translate="true">The user does not have permissions to submit requests from a mobile device. The user does not have sufficient permissions to use a mobile device with this merchant account.</message>
+        <message code="E00058" translate="true">The merchant has met or exceeded the number of pending mobile devices permitted for this account. The merchant has too many devices in a pending status.</message>
+        <message code="E00059" translate="true">The authentication type is not allowed for this method call.</message>
+        <message code="E00060" translate="true">The transaction type is invalid.</message>
+        <message code="E00061" translate="true">Could not decrypt DUKPT blobs and returned error.</message>
+        <message code="E00062" translate="true">Fatal error when calling web service.</message>
+        <message code="E00063" translate="true">Calling web service return error.</message>
+        <message code="E00064" translate="true">Client authorization denied.</message>
+        <message code="E00065" translate="true">Prerequisite failed.</message>
+        <message code="E00066" translate="true">Invalid value.</message>
+        <message code="E00067" translate="true">An error occurred while parsing the XML request.</message>
+        <message code="E00068" translate="true">An error occurred while parsing the XML request.</message>
+        <message code="E00069" translate="true">The Payment Gateway Account service (id=8) has already been accepted. Decline is not allowed.</message>
+        <message code="E00070" translate="true">The Payment Gateway Account service (id=8) has already been declined. Agree is not allowed.</message>
+        <message code="E00071" translate="true">Some of the fields were empty or missing.</message>
+        <message code="E00072" translate="true">Required node missing.</message>
+        <message code="E00073" translate="true">Some of the field values is not valid.</message>
+        <message code="E00074" translate="true">This merchant is not associated with this reseller.</message>
+        <message code="E00075" translate="true">An error occurred while parsing the XML request.</message>
+        <message code="E00076" translate="true">Invalid value.</message>
+        <message code="E00077" translate="true">The length of value is too long.</message>
+        <message code="E00078" translate="true">Pending Status (not completed).</message>
+        <message code="E00079" translate="true">The impersonation login ID is invalid or not present.</message>
+        <message code="E00080" translate="true">The impersonation API Key is invalid or not present.</message>
+        <message code="E00081" translate="true">Partner account is not authorized to impersonate the login account.</message>
+        <message code="E00082" translate="true">Country is not valid.</message>
+        <message code="E00083" translate="true">Bank payment method is not accepted for the selected business country.</message>
+        <message code="E00084" translate="true">Credit card payment method is not accepted for the selected business country.</message>
+        <message code="E00085" translate="true">State is not valid.</message>
+        <message code="E00086" translate="true">Merchant has declined authorization to resource.</message>
+        <message code="E00087" translate="true">No subscriptions found for the given request. There are no subscriptions available for the merchant account for the type of subscriptions requested.</message>
+        <message code="E00088" translate="true">ProfileIds cannot be sent when requesting CreateProfile. CreateProfile and profileIds are mutually exclusive, only one of them can be provided at a time.</message>
+        <message code="E00089" translate="true">Payment data is required when requesting CreateProfile. When requesting CreateProfile payment data cannot be null.</message>
+        <message code="E00090" translate="true">PaymentProfile cannot be sent with payment data. PaymentProfile and PaymentData are mutually exclusive, only one of them can be provided at a time.</message>
+        <message code="E00091" translate="true">PaymentProfileId cannot be sent with payment data. PaymentProfileId and payment data are mutually exclusive, only one of them can be provided at a time.</message>
+        <message code="E00092" translate="true">ShippingProfileId cannot be sent with ShipTo data. ShippingProfileId and ShipToAddress are mutually exclusive, only one of them can be provided at a time.</message>
+        <message code="E00093" translate="true">PaymentProfile cannot be sent with billing data. PaymentProfile and Billing information are mutually exclusive, only one of them can be provided at a time.</message>
+        <message code="E00094" translate="true">Paging Offset exceeds the maximum allowed value. Paging Offset exceeds allowed value. Check and lower the value.</message>
+        <message code="E00095" translate="true">ShippingProfileId is not provided within Customer Profile. When using Customer Profile with Credit Card Info to specify Shipping Profile, Shipping Profile Id must be included.</message>
+        <message code="E00096" translate="true">Finger Print value is not valid.</message>
+        <message code="E00097" translate="true">Finger Print can not be generated.</message>
+        <message code="E00098" translate="true">Customer Profile ID or Shipping Profile ID not found. Search for shipping profile using customer profile id and shipping profile id did not find any records.</message>
+        <message code="E00099" translate="true">Customer profile creation failed. This transaction ID is invalid. Do not use transactions older than 30 days for customer profile creation.</message>
+        <message code="E00100" translate="true">Customer profile creation failed. This transaction type does not support profile creation.</message>
+        <message code="E00101" translate="true">Customer profile creation failed. Error creating a customer payment profile from transaction.</message>
+        <message code="E00102" translate="true">Customer Info is missing. Error creating a customer profile from transaction.</message>
+        <message code="E00103" translate="true">Customer profile creation failed. This payment method does not support profile creation.</message>
+        <message code="E00104" translate="true">Server in maintenance. Please try again later. The server is in maintenance, so the requested method is unavailable. Please try again later.</message>
+        <message code="E00105" translate="true">The specified payment profile is associated with an active or suspended subscription and cannot be deleted.</message>
+        <message code="E00106" translate="true">The specified customer profile is associated with an active or suspended subscription and cannot be deleted.</message>
+        <message code="E00107" translate="true">The specified shipping profile is associated with an active or suspended subscription and cannot be deleted.</message>
+        <message code="E00108" translate="true">CustomerProfileId cannot be sent with customer data. CustomerProfileId and Customer data are mutually exclusive, only one of them can be provided for any single request.</message>
+        <message code="E00109" translate="true">CustomerAddressId cannot be sent with shipTo data. Shipping Address ID and Shipping data are mutually exclusive, only one of them can be provided for any single request.</message>
+        <message code="E00110" translate="true">CustomerPaymentProfileId is not provided within Customer Profile. When using Customer Profile, CustomerPaymentProfileId must be included.</message>
+        <message code="E00111" translate="true">The original subscription was not created with this Customer Profile. If Customer Profile ID is included, it must match the Customer Profile ID used for the original subscription.</message>
+        <message code="E00112" translate="true">The specified month should not be in the future. Reports cannot be generated for future dates, thus the specified date is invalid.</message>
+        <message code="E00113" translate="true">Invalid OTS Token Data.</message>
+        <message code="E00114" translate="true">Invalid OTS Token. The specified OTS Token is invalid.</message>
+        <message code="E00115" translate="true">Expired OTS Token. The specified OTS Token has expired.</message>
+        <message code="E00116" translate="true">OTS Token access violation. The authenticated merchant does not have access to the specified OTS Token.</message>
+        <message code="E00117" translate="true">The OTS Service cannot complete the request due to a validation or configuration error.</message>
+        <message code="E00118" translate="true">The transaction has been declined. The transaction was submitted from a blocked IP address.</message>
+        <message code="E00119" translate="true">Payment information should not be sent to Hosted Payment Page request. Hosted Payment Page will capture the payment (bank/card) information so this information should not be included with this request.</message>
+        <message code="E00120" translate="true">Payment and Shipping Profile IDs cannot be specified when creating new profiles.</message>
+        <message code="E00121" translate="true">No default payment/shipping profile found. The customer profile does not have a default payment/shipping profile.</message>
+        <message code="E00122" translate="true">Please use Merchant Interface settings (API Credentials and Keys) to generate a signature key.</message>
+        <message code="E00123" translate="true">The provided access token has expired. See the OAuth documentation for details.</message>
+        <message code="E00124" translate="true">The provided access token is invalid. See the OAuth documentation for more details.</message>
+        <message code="E00125" translate="true">Hash does not match.</message>
+        <message code="E00126" translate="true">Failed shared key validation.</message>
+        <message code="E00127" translate="true">Invoice does not exist. Invoice number did not find any records.</message>
+        <message code="E00128" translate="true">Requested action is not allowed. Requested action is not allowed due to current status of the object.</message>
+        <message code="E00129" translate="true">Failed sending email.</message>
+        <message code="E00130" translate="true">Valid Customer Profile ID or Email is required.</message>
+        <message code="E00131" translate="true">Invoice created but not processed completely. Invoice created but failed send email and update status</message>
+        <message code="E00132" translate="true">Invoicing or CIM service is not enabled. The payment gateway account is not enabled for Invoicing or CIM service.</message>
+        <message code="E00133" translate="true">Server error.</message>
+        <message code="E00134" translate="true">Due date is invalid. Due date is past date or not specified.</message>
+        <message code="E00135" translate="true">Merchant has not provided processor information. Merchant has not yet provided processor information to set test mode flag to false.</message>
+        <message code="E00136" translate="true">Processor account is still in process,  Processor account has not been setup to set test mode flag to false.</message>
+        <message code="E00137" translate="true">Multiple payment types are not allowed. Only either CreditCard or Bank is allowed.</message>
+        <message code="E00138" translate="true">Payment and Shipping Profile IDs cannot be specified when requesting a hosted payment page.</message>
+        <message code="E00139" translate="true">Access denied. Access Token does not have correct permissions for this API.</message>
+        <message code="E00140" translate="true">Reference ID not found.</message>
+        <message code="E00141" translate="true">Payment Profile creation with this OpaqueData descriptor requires transactionMode to be set to liveMode.</message>
+        <message code="E00142" translate="true">RecurringBilling setting is a required field for recurring tokenized payment transactions.</message>
+        <message code="E00143" translate="true">Failed to parse MerchantId to integer.</message>
+        <message code="E00144" translate="true">We are currently holding the last transaction for review. Before you reactivate the subscription. Alternately, the merchant can log into the Merchant Interface and click Tools Fraud Detection Suite to view the Suspicious Transaction Reports and approve or decline the held transaction.</message>
+        <message code="E00145" translate="true">This invoice has been canceled by the sender. Please contact the sender directly if you have questions.</message>
+    </message_list>
+</mapping>

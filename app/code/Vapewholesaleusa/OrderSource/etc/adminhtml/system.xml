@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="vapewholesaleusa" translate="label" sortOrder="10">
+            <label>Vape Wholesale USA</label>
+        </tab>
+        <section id="ordersource" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Order Source</label>
+            <tab>vapewholesaleusa</tab>
+            <resource>Vapewholesaleusa_OrderSource::config_order_source</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>General</label>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="order_limit" translate="label" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Max Order Number Returns For API</label>
+                    <comment>Set 0 to disable limit</comment>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+                <field id="order_source_assigment" translate="label" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <source_model>Vapewholesaleusa\OrderSource\Model\Source\SourceAssigmentsOptions</source_model>
+                    <comment>This method will be used to calculate the remaining qty for the sources.</comment>
+                    <label>Order Source Arragment Algorithm</label>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+                <field id="fallback_source" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Fallback Source</label>
+                    <comment>When any source is not assigned to order items, it assumes all items are assigned to fallback source.</comment>
+                    <source_model>Vapewholesaleusa\OrderSource\Model\Source\AllSourcesOption</source_model>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+                <field id="order_sourcing" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Order Sourcing</label>
+                    <comment>Enable filtering the orders based on the assigned source on rest api requests.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_sourcing" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Shipping Sourcing</label>
+                    <comment>Enable the shipping auto source assigment based on the assigned source on rest api requests.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+                <field id="stock_sourcing" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Stock Sourcing</label>
+                    <comment>Enable filtering the stock qtys and updating the source qtys based on the assigned source on rest api requests.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+                <field id="cleanup_period" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Cleanup Period</label>
+                    <comment>It will cleanup the completed orders source assigments. It works weekly and will delete records older than selected period, to keep the db clean.</comment>
+                    <source_model>Vapewholesaleusa\OrderSource\Model\Source\CleanUpPeriodOptions</source_model>
+                    <depends>
+                        <field id="ordersource/general/enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="source_copier" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+            <label>Source Qty Copier</label>
+                <field id="source_source_code" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Base Source</label>
+                    <source_model>Vapewholesaleusa\OrderSource\Model\Source\AllSourcesOption</source_model>
+                </field>
+                <field id="target_source_code" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Target Source</label>
+                    <source_model>Vapewholesaleusa\OrderSource\Model\Source\AllSourcesOption</source_model>
+                </field>
+                <field id="vapewholesaleusa_ordersource_system_config_button_button" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Start to Copy</label>
+                    <frontend_model>Vapewholesaleusa\OrderSource\Block\Adminhtml\Block\System\Config\Button\Button</frontend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

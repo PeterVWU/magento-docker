@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Rootways\Authorizecim\Gateway\Request\CustomerIpDataBuilder"
+                type="Vapewholesaleusa\RootwaysAuthorizecim\Gateway\Request\CustomerIpDataBuilder"/>
+    <virtualType name="Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLoggerHandler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string"><![CDATA[var/log/rootways_payment.log]]></argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="name" xsi:type="string">rootways_payment</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLoggerHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Add Rootways Authorizecim Payment logger -->
+    <!-- Authorize transaction commands -->
+    <virtualType name="AuthorizecimAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimOrderCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Sale transaction commands -->
+    <virtualType name="AuthorizecimSaleCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Pre Auth commands -->
+    <virtualType name="AuthorizecimCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Refund Transaction Commands -->
+    <virtualType name="AuthorizecimRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void Transaction Commands -->
+    <virtualType name="AuthorizecimVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Accept Payment Commands -->
+    <virtualType name="AuthorizecimAcceptPaymentCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Deny Payment Commands -->
+    <virtualType name="AuthorizecimDenyPaymentCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultSaleCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="AuthorizecimVaultCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize And Sale Transaction Commands -->
+    <virtualType name="AuthorizecimVisaCheckoutAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize And Sale Transaction Commands -->
+    <virtualType name="AuthorizecimGooglePayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vapewholesaleusa\RootwaysAuthorizecim\Model\PaymentLogger</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Payment\Model\Config">
+        <plugin name="plugin_year_payment_config" type="Vapewholesaleusa\RootwaysAuthorizecim\Plugin\Model\PaymentConfigPlugin" />
+    </type>
+</config>

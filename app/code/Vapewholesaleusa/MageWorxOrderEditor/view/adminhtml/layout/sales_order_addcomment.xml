@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
+    <referenceContainer name="root">
+        <block class="Magento\Backend\Block\Template"
+               name="comments_js"
+               after="order_history"
+               template="MageWorx_OrderEditor::order/view/comments/js.phtml" />
+        <referenceBlock name="order_history">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Vapewholesaleusa_MageWorxOrderEditor::order/view/comments.phtml</argument>
+            </action>
+            <arguments>
+                <argument name="view_model" xsi:type="object">Vapewholesaleusa\MageWorxOrderEditor\ViewModel\Comments</argument>
+            </arguments>
+        </referenceBlock>
+    </referenceContainer>
+</layout>

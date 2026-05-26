@@ -4,7 +4,11 @@
   "type": "project",
   "license": "proprietary",
   "require": {
-    "magento/product-community-edition": ">=2.4.8-p4 <2.4.8-p5"
+    "aheadworks/module-reward-points": "^2.5",
+    "aheadworks/module-reward-points-graph-ql": "^1.0",
+    "amasty/store-credit": "^1.4",
+    "magento/product-community-edition": ">=2.4.8-p4 <2.4.8-p5",
+    "mageworx/module-ordereditor": "^3.11"
   },
   "autoload": {
     "exclude-from-classmap": [
@@ -16,7 +20,9 @@
       "app/etc/NonComposerComponentRegistration.php"
     ],
     "psr-4": {
+      "Cminds\\": "app/code/Cminds/",
       "Vapewholesaleusa\\": "app/code/Vapewholesaleusa/",
+      "Rootways\\": "app/code/Rootways/",
       "Magento\\Setup\\": "setup/src/Magento/Setup/"
     }
   },
@@ -41,9 +47,30 @@
     "sort-packages": true
   },
   "repositories": {
+    "aheadworks": {
+      "type": "composer",
+      "url": "https://dist.aheadworks.com",
+      "only": [
+        "aheadworks/*"
+      ]
+    },
+    "amasty": {
+      "type": "composer",
+      "url": "https://composer.amasty.com/community/",
+      "only": [
+        "amasty/*"
+      ]
+    },
     "magento": {
       "type": "composer",
       "url": "https://repo.magento.com/"
+    },
+    "mageworx": {
+      "type": "composer",
+      "url": "https://packages.mageworx.com",
+      "only": [
+        "mageworx/*"
+      ]
     }
   },
   "minimum-stability": "stable",

@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<section id="customer_license" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+			<label>Customer License</label>
+			<tab>vapewholesaleusa</tab>
+			<resource>Vapewholesaleusa_CustomerLicense::config_vapewholesaleusa_customerlicense</resource>
+			<group id="general" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+				<label>General</label>
+				<field id="enabled" type="select" sortOrder="1" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Enable</label>
+					<comment/>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+                <field id="notification_emails" showInWebsite="1" showInStore="1" showInDefault="1" translate="label" type="text" sortOrder="20">
+                    <label>Send copy of Tobacco License expiration notice to</label>
+                    <comment>Comma separated emails</comment>
+                </field>
+                <field id="notification_days" showInWebsite="1" showInStore="1" showInDefault="1" translate="label" type="text" sortOrder="30">
+                    <label>License Notification Days</label>
+                    <comment>Example: -30,-7,-1</comment>
+                </field>
+                <field id="email_template" showInWebsite="1" showInStore="1" showInDefault="1" translate="label" type="select" sortOrder="40">
+                    <label>Email Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+			</group>
+            <group id="cron" showInWebsite="1" showInStore="1" showInDefault="1" translate="label" sortOrder="20">
+                <label>Cron</label>
+                <field id="schedule" showInWebsite="1" showInStore="1" showInDefault="1" translate="label" type="text" sortOrder="10">
+                    <label>Cron Schedule</label>
+                    <comment>Example: 0 0 * * *</comment>
+                </field>
+                <field id="run_manually_email" showInWebsite="1" showInStore="1" showInDefault="1" translate="label" type="button" sortOrder="20">
+                    <label>Run Manually License Notification</label>
+                    <frontend_model>Vapewholesaleusa\CustomerLicense\Block\Adminhtml\System\Config\NotificationButton</frontend_model>
+                </field>
+            </group>
+		</section>
+	</system>
+</config>

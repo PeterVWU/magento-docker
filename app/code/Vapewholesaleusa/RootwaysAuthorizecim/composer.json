@@ -1,0 +1,21 @@
+{
+  "name": "vapewholesaleusa/module-rootways-authorizecim",
+  "version": "1.0.0",
+  "description": "N/A",
+  "type": "magento2-module",
+  "require": {
+    "magento/framework": "*",
+    "rootways/module-authorizenetcim": "3.0.*"
+  },
+  "license": [
+    "Proprietary"
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Vapewholesaleusa\\RootwaysAuthorizecim\\": ""
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template
+        id="customer_license_general_email_template"
+        label="Customer License Expiration Notification"
+        file="license_expiration.html"
+        type="html"
+        module="Vapewholesaleusa_CustomerLicense"
+        area="frontend"
+    />
+</config>

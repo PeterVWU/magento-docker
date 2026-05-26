@@ -1,0 +1,21 @@
+<?php
+/** @var \Vapewholesaleusa\PaymentRequest\Block\Payment\Form $block */
+?>
+<div>
+    <?php if (!$block->getToken()): ?>
+        <p><?= __('Your link is no longer valid.') ?></p>
+        <p>
+            <?= __('Redirecting to the home page in 5 seconds.') ?>
+        </p>
+        <script>
+            setTimeout(function () {
+                window.location.href = '<?= $block->escapeUrl('/') ?>';
+            }, 5000);
+        </script>
+    <?php else: ?>
+        <form id="payment_form" action="<?= $block->escapeUrl($block->getHostedGatewayUrl()) ?>" method="post">
+            <input type="hidden" name="token" value="<?= $block->escapeHtmlAttr($block->getToken()) ?>" />
+            <button type="submit"><?= $block->escapeHtml(__('Proceed to Payment')) ?></button>
+        </form>
+    <?php endif; ?>
+</div>
