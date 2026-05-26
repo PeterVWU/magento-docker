@@ -147,26 +147,48 @@ resource "google_secret_manager_secret_iam_member" "opensearch_admin_access" {
   member    = module.service_accounts.members.opensearch
 }
 
+resource "google_secret_manager_secret_iam_member" "opensearch_extra_secret_access" {
+  for_each = setsubtract(
+    setunion(local.opensearch_secret_ids, toset(["magento-prod-opensearch-app-password"])),
+    toset([local.opensearch_admin_secret_id]),
+  )
+
+  project   = var.project_id
+  secret_id = module.secrets.secret_ids[each.value]
+  role      = "roles/secretmanager.secretAccessor"
+  member    = module.service_accounts.members.opensearch
+}
+
 module "opensearch" {
-  source                   = "../../modules/opensearch-gce"
-  name                     = "${local.name_prefix}-search"
-  project_id               = var.project_id
-  zone                     = var.zone
-  network                  = var.network_self_link
-  subnetwork               = var.subnetwork_self_link
-  node_count               = var.opensearch_node_count
-  machine_type             = var.opensearch_machine_type
-  data_disk_size_gb        = var.opensearch_data_disk_size_gb
-  service_account_email    = module.service_accounts.emails.opensearch
-  opensearch_version       = var.opensearch_version
-  heap_size                = var.opensearch_heap_size
-  admin_password_secret_id = local.opensearch_admin_secret_id
-  snapshot_bucket_name     = module.buckets.opensearch_snapshot_bucket_name
-  snapshot_base_path       = "${local.environment}/snapshots"
-  app_source_ranges        = var.web_mig_source_ranges
-  app_source_tags          = var.web_mig_source_tags
-  cluster_tag              = "magento-prod-opensearch"
-  labels                   = local.labels
+  source                        = "../../modules/opensearch-gce"
+  name                          = "${local.name_prefix}-search"
+  project_id                    = var.project_id
+  zone                          = var.zone
+  network                       = var.network_self_link
+  subnetwork                    = var.subnetwork_self_link
+  node_count                    = var.opensearch_node_count
+  node_private_ips              = var.opensearch_node_private_ips
+  machine_type                  = var.opensearch_machine_type
+  data_disk_size_gb             = var.opensearch_data_disk_size_gb
+  service_account_email         = module.service_accounts.emails.opensearch
+  opensearch_version            = var.opensearch_version
+  heap_size                     = var.opensearch_heap_size
+  admin_password_secret_id      = local.opensearch_admin_secret_id
+  tls_ca_cert_secret_id         = local.opensearch_tls_ca_cert_secret_id
+  tls_node_cert_secret_id       = local.opensearch_tls_node_cert_secret_id
+  tls_node_key_secret_id        = local.opensearch_tls_node_key_secret_id
+  tls_admin_cert_secret_id      = local.opensearch_tls_admin_cert_secret_id
+  tls_admin_key_secret_id       = local.opensearch_tls_admin_key_secret_id
+  app_password_secret_id        = "magento-prod-opensearch-app-password"
+  operator_password_secret_id   = local.opensearch_operator_secret_id
+  breakglass_password_secret_id = local.opensearch_breakglass_secret_id
+  magento_index_prefix          = var.magento_opensearch_index_prefix
+  snapshot_bucket_name          = module.buckets.opensearch_snapshot_bucket_name
+  snapshot_base_path            = "${local.environment}/snapshots"
+  app_source_ranges             = var.web_mig_source_ranges
+  app_source_tags               = var.web_mig_source_tags
+  cluster_tag                   = "magento-prod-opensearch"
+  labels                        = local.labels
 
   depends_on = [module.project_services, module.cloud_nat]
 }
@@ -199,6 +221,7 @@ module "compute_runtime" {
   redis_auth_secret_id          = "magento-prod-redis-auth"
   opensearch_host               = "https://${module.opensearch.node_private_ips[0]}"
   opensearch_password_secret_id = "magento-prod-opensearch-app-password"
+  opensearch_user               = "magento_app"
   opensearch_ssl_verify         = false
   crypt_key_secret_id           = "magento-prod-app-crypt-key"
   media_bucket_name             = module.buckets.media_bucket_name

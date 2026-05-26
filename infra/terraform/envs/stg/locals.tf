@@ -23,9 +23,16 @@ locals {
     "magento-stg-composer-auth-json",
   ])
 
-  opensearch_admin_secret_id  = "magento-stg-opensearch-admin-password"
-  media_hmac_key_secret_id    = "magento-stg-media-hmac-key"
-  media_hmac_secret_secret_id = "magento-stg-media-hmac-secret"
+  opensearch_admin_secret_id          = "magento-stg-opensearch-admin-password"
+  opensearch_tls_ca_cert_secret_id    = "magento-stg-opensearch-tls-ca-cert"
+  opensearch_tls_node_cert_secret_id  = "magento-stg-opensearch-tls-node-cert"
+  opensearch_tls_node_key_secret_id   = "magento-stg-opensearch-tls-node-key"
+  opensearch_tls_admin_cert_secret_id = "magento-stg-opensearch-tls-admin-cert"
+  opensearch_tls_admin_key_secret_id  = "magento-stg-opensearch-tls-admin-key"
+  opensearch_operator_secret_id       = "magento-stg-opensearch-operator-password"
+  opensearch_breakglass_secret_id     = "magento-stg-opensearch-breakglass-password"
+  media_hmac_key_secret_id            = "magento-stg-media-hmac-key"
+  media_hmac_secret_secret_id         = "magento-stg-media-hmac-secret"
 
   media_hmac_secret_ids = toset([
     local.media_hmac_key_secret_id,
@@ -34,6 +41,13 @@ locals {
 
   opensearch_secret_ids = toset([
     local.opensearch_admin_secret_id,
+    local.opensearch_tls_ca_cert_secret_id,
+    local.opensearch_tls_node_cert_secret_id,
+    local.opensearch_tls_node_key_secret_id,
+    local.opensearch_tls_admin_cert_secret_id,
+    local.opensearch_tls_admin_key_secret_id,
+    local.opensearch_operator_secret_id,
+    local.opensearch_breakglass_secret_id,
   ])
 
   base_project_services = toset([

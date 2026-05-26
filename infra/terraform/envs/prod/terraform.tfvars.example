@@ -19,6 +19,7 @@ redis_memory_size_gb          = 5
 redis_transit_encryption_mode = "DISABLED"
 
 opensearch_node_count             = 3
+opensearch_node_private_ips       = []
 opensearch_machine_type           = "e2-standard-4"
 opensearch_version                = "3.6.0"
 opensearch_heap_size              = "2g"

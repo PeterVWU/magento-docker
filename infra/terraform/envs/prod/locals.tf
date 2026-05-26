@@ -23,10 +23,24 @@ locals {
     "magento-prod-composer-auth-json",
   ])
 
-  opensearch_admin_secret_id = "magento-prod-opensearch-admin-password"
+  opensearch_admin_secret_id          = "magento-prod-opensearch-admin-password"
+  opensearch_tls_ca_cert_secret_id    = "magento-prod-opensearch-tls-ca-cert"
+  opensearch_tls_node_cert_secret_id  = "magento-prod-opensearch-tls-node-cert"
+  opensearch_tls_node_key_secret_id   = "magento-prod-opensearch-tls-node-key"
+  opensearch_tls_admin_cert_secret_id = "magento-prod-opensearch-tls-admin-cert"
+  opensearch_tls_admin_key_secret_id  = "magento-prod-opensearch-tls-admin-key"
+  opensearch_operator_secret_id       = "magento-prod-opensearch-operator-password"
+  opensearch_breakglass_secret_id     = "magento-prod-opensearch-breakglass-password"
 
   opensearch_secret_ids = toset([
     local.opensearch_admin_secret_id,
+    local.opensearch_tls_ca_cert_secret_id,
+    local.opensearch_tls_node_cert_secret_id,
+    local.opensearch_tls_node_key_secret_id,
+    local.opensearch_tls_admin_cert_secret_id,
+    local.opensearch_tls_admin_key_secret_id,
+    local.opensearch_operator_secret_id,
+    local.opensearch_breakglass_secret_id,
   ])
 
   base_project_services = toset([

@@ -18,6 +18,17 @@ variable "subnetwork" {
   type = string
 }
 
+variable "node_private_ips" {
+  description = "Optional fixed private IPs for OpenSearch nodes, indexed to node_count. Leave empty to let GCE allocate."
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = length(var.node_private_ips) == 0 || length(var.node_private_ips) == var.node_count
+    error_message = "node_private_ips must be empty or contain one IP per OpenSearch node."
+  }
+}
+
 variable "node_count" {
   type    = number
   default = 3
@@ -80,6 +91,69 @@ variable "heap_size" {
 
 variable "admin_password_secret_id" {
   description = "Secret Manager secret ID containing the initial/admin OpenSearch password."
+  type        = string
+}
+
+variable "security_hardening_enabled" {
+  description = "Whether to replace packaged OpenSearch demo security material with reviewed TLS and users from Secret Manager."
+  type        = bool
+  default     = true
+}
+
+variable "tls_ca_cert_secret_id" {
+  description = "Secret Manager secret ID containing the PEM CA certificate used to trust OpenSearch node/admin certificates."
+  type        = string
+}
+
+variable "tls_node_cert_secret_id" {
+  description = "Secret Manager secret ID containing the PEM certificate used by OpenSearch HTTP and transport TLS."
+  type        = string
+}
+
+variable "tls_node_key_secret_id" {
+  description = "Secret Manager secret ID containing the PEM private key for the OpenSearch node certificate."
+  type        = string
+}
+
+variable "tls_admin_cert_secret_id" {
+  description = "Secret Manager secret ID containing the PEM admin client certificate for securityadmin and break-glass maintenance."
+  type        = string
+}
+
+variable "tls_admin_key_secret_id" {
+  description = "Secret Manager secret ID containing the PEM private key for the admin client certificate."
+  type        = string
+}
+
+variable "admin_distinguished_name" {
+  description = "Distinguished name embedded in the admin client certificate."
+  type        = string
+  default     = "CN=magento-opensearch-admin"
+}
+
+variable "node_distinguished_name" {
+  description = "Distinguished name embedded in the OpenSearch node certificate."
+  type        = string
+  default     = "CN=magento-opensearch-node"
+}
+
+variable "app_password_secret_id" {
+  description = "Secret Manager secret ID containing the Magento OpenSearch application user password."
+  type        = string
+}
+
+variable "operator_password_secret_id" {
+  description = "Secret Manager secret ID containing the day-to-day OpenSearch operator user password."
+  type        = string
+}
+
+variable "breakglass_password_secret_id" {
+  description = "Secret Manager secret ID containing the emergency break-glass OpenSearch user password."
+  type        = string
+}
+
+variable "magento_index_prefix" {
+  description = "Magento OpenSearch index prefix; the Magento application role is limited to indices matching this prefix."
   type        = string
 }
 

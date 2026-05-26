@@ -89,7 +89,7 @@ instance startup script:
 - sets `vm.max_map_count=262144`;
 - mounts the attached persistent disk at `/var/lib/opensearch`;
 - writes heap sizing under `/etc/opensearch/jvm.options.d/`;
-- appends managed cluster/discovery settings to `/etc/opensearch/opensearch.yml`;
+- appends managed cluster/discovery/security settings to `/etc/opensearch/opensearch.yml`;
 - installs the `repository-gcs` plugin;
 - writes a helper to register the GCS snapshot repository.
 
@@ -98,11 +98,16 @@ account at first boot. The module creates the secret container and IAM binding,
 but it does not create the secret version. Operators must add the password value
 before applying live infrastructure.
 
-The package still starts from OpenSearch's packaged demo security material.
-Before production launch, replace demo TLS/users with production certificates
-and a reviewed security configuration. The OpenSearch node is intentionally
-private-IP only; outbound package and Google API access goes through Cloud NAT,
-not a public VM address.
+ECOM-79 hardening replaces the package demo TLS/users during bootstrap. The
+OpenSearch VM service account reads environment-specific PEM certificates,
+PEM keys, and reviewed user passwords from Secret Manager, writes the
+OpenSearch Security plugin configuration, and applies it with
+`securityadmin.sh`. The Magento runtime user is limited to the configured
+Magento index prefix, while operator and break-glass access are separate users.
+See `docs/ecom-79/opensearch-security-hardening.md` for certificate source,
+rotation, access, and validation procedures. The OpenSearch node is
+intentionally private-IP only; outbound package and Google API access goes
+through Cloud NAT, not a public VM address.
 
 ## State And Secrets
 

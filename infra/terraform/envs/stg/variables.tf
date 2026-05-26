@@ -51,6 +51,10 @@ variable "redis_transit_encryption_mode" {
 variable "opensearch_node_count" {
   type = number
 }
+variable "opensearch_node_private_ips" {
+  type    = list(string)
+  default = []
+}
 variable "opensearch_machine_type" {
   type = string
 }

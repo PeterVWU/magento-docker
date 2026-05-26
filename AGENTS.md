@@ -69,8 +69,10 @@ If the local OpenTofu binary is used, it currently lives at
 
 ## ECOM Follow-ups
 
-- ECOM-79 owns production OpenSearch security hardening. ECOM-6 staging uses the
-  packaged OpenSearch security bootstrap only as an initial scaffold.
+- ECOM-79 owns production OpenSearch security hardening. The OpenSearch GCE
+  module now expects managed PEM certificates and reviewed users from Secret
+  Manager; see `docs/ecom-79/opensearch-security-hardening.md` before rolling
+  OpenSearch nodes.
 - The next migration rehearsal/export pass should repair the low
   `setup_module` count observed in the first rehearsal dataset so staging/prod
   imports do not depend on metadata repair steps.

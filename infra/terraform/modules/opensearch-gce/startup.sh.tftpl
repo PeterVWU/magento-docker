@@ -8,10 +8,24 @@ OPENSEARCH_VERSION='${opensearch_version}'
 HEAP_SIZE='${heap_size}'
 PROJECT_ID='${project_id}'
 ADMIN_PASSWORD_SECRET_ID='${admin_password_secret_id}'
+SECURITY_HARDENING_ENABLED='${security_hardening_enabled}'
+TLS_CA_CERT_SECRET_ID='${tls_ca_cert_secret_id}'
+TLS_NODE_CERT_SECRET_ID='${tls_node_cert_secret_id}'
+TLS_NODE_KEY_SECRET_ID='${tls_node_key_secret_id}'
+TLS_ADMIN_CERT_SECRET_ID='${tls_admin_cert_secret_id}'
+TLS_ADMIN_KEY_SECRET_ID='${tls_admin_key_secret_id}'
+ADMIN_DN='${admin_distinguished_name}'
+NODE_DN='${node_distinguished_name}'
+APP_PASSWORD_SECRET_ID='${app_password_secret_id}'
+OPERATOR_PASSWORD_SECRET_ID='${operator_password_secret_id}'
+BREAKGLASS_PASSWORD_SECRET_ID='${breakglass_password_secret_id}'
+MAGENTO_INDEX_PREFIX='${magento_index_prefix}'
 SNAPSHOT_BUCKET='${snapshot_bucket_name}'
 SNAPSHOT_BASE_PATH='${snapshot_base_path}'
 DATA_DEVICE='/dev/disk/by-id/google-opensearch-data'
 DATA_DIR='/var/lib/opensearch'
+SECURITY_DIR='/etc/opensearch/ecom-security'
+SECURITY_CONFIG_DIR='/etc/opensearch/opensearch-security'
 MARKER_START='### ECOM-6 managed OpenSearch settings start ###'
 MARKER_END='### ECOM-6 managed OpenSearch settings end ###'
 
@@ -158,7 +172,8 @@ cluster.initial_cluster_manager_nodes: [$${manager_nodes}]"
       /'"$${MARKER_START}"'/ { skip=1; next }
       /'"$${MARKER_END}"'/ { skip=0; next }
       skip { next }
-      /^[[:space:]]*(cluster\.name|node\.name|network\.host|http\.port|transport\.port|path\.data|discovery\.type|discovery\.seed_hosts|cluster\.initial_cluster_manager_nodes):/ { next }
+      /^[[:space:]]*(cluster\.name|node\.name|network\.host|http\.port|transport\.port|path\.data|discovery\.type|discovery\.seed_hosts|cluster\.initial_cluster_manager_nodes|plugins\.security\..*|transport\.ssl\.enforce_hostname_verification):/ { next }
+      /^[[:space:]]*-[[:space:]]*(CN=magento-opensearch-admin|CN=magento-opensearch-node)/ { next }
       { print }
     ' "$${existing}" >"$${stripped}"
     cp "$${stripped}" "$${existing}"
@@ -176,10 +191,232 @@ http.port: 9200
 transport.port: 9300
 path.data: $${DATA_DIR}
 $${discovery_block}
-$${MARKER_END}
 EOF_YML
+
+  if [[ "$${SECURITY_HARDENING_ENABLED}" == "true" ]]; then
+    cat >>"$${existing}" <<EOF_SECURITY
+plugins.security.ssl.transport.pemcert_filepath: $${SECURITY_DIR}/node.pem
+plugins.security.ssl.transport.pemkey_filepath: $${SECURITY_DIR}/node-key.pem
+plugins.security.ssl.transport.pemtrustedcas_filepath: $${SECURITY_DIR}/ca.pem
+transport.ssl.enforce_hostname_verification: false
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.pemcert_filepath: $${SECURITY_DIR}/node.pem
+plugins.security.ssl.http.pemkey_filepath: $${SECURITY_DIR}/node-key.pem
+plugins.security.ssl.http.pemtrustedcas_filepath: $${SECURITY_DIR}/ca.pem
+plugins.security.allow_default_init_securityindex: false
+plugins.security.authcz.admin_dn:
+  - "$${ADMIN_DN}"
+plugins.security.nodes_dn:
+  - "$${NODE_DN}"
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled:
+  - "magento_operator"
+plugins.security.audit.type: internal_opensearch
+gcs.client.default.truststore.path: /usr/share/opensearch/jdk/lib/security/cacerts
+gcs.client.default.truststore.type: JKS
+EOF_SECURITY
+  fi
+
+  cat >>"$${existing}" <<EOF_YML_END
+$${MARKER_END}
+EOF_YML_END
+
   chown root:opensearch "$${existing}"
   chmod 0660 "$${existing}"
+}
+
+require_secret_id() {
+  local value="$1"
+  local name="$2"
+  if [[ -z "$${value}" ]]; then
+    log "missing required OpenSearch hardening secret: $${name}"
+    exit 1
+  fi
+}
+
+hash_password() {
+  local password="$1"
+  OPENSEARCH_JAVA_HOME=/usr/share/opensearch/jdk \
+    /usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p "$${password}" \
+    | tail -n 1
+}
+
+write_security_files() {
+  if [[ "$${SECURITY_HARDENING_ENABLED}" != "true" ]]; then
+    log "OpenSearch security hardening disabled; packaged security material remains in use"
+    return
+  fi
+
+  require_secret_id "$${TLS_CA_CERT_SECRET_ID}" "tls_ca_cert_secret_id"
+  require_secret_id "$${TLS_NODE_CERT_SECRET_ID}" "tls_node_cert_secret_id"
+  require_secret_id "$${TLS_NODE_KEY_SECRET_ID}" "tls_node_key_secret_id"
+  require_secret_id "$${TLS_ADMIN_CERT_SECRET_ID}" "tls_admin_cert_secret_id"
+  require_secret_id "$${TLS_ADMIN_KEY_SECRET_ID}" "tls_admin_key_secret_id"
+  require_secret_id "$${APP_PASSWORD_SECRET_ID}" "app_password_secret_id"
+  require_secret_id "$${OPERATOR_PASSWORD_SECRET_ID}" "operator_password_secret_id"
+  require_secret_id "$${BREAKGLASS_PASSWORD_SECRET_ID}" "breakglass_password_secret_id"
+
+  install -d -m 0750 -o root -g opensearch "$${SECURITY_DIR}" "$${SECURITY_CONFIG_DIR}"
+  secret_payload "$${TLS_CA_CERT_SECRET_ID}" >"$${SECURITY_DIR}/ca.pem"
+  secret_payload "$${TLS_NODE_CERT_SECRET_ID}" >"$${SECURITY_DIR}/node.pem"
+  secret_payload "$${TLS_NODE_KEY_SECRET_ID}" >"$${SECURITY_DIR}/node-key.pem"
+  secret_payload "$${TLS_ADMIN_CERT_SECRET_ID}" >"$${SECURITY_DIR}/admin.pem"
+  secret_payload "$${TLS_ADMIN_KEY_SECRET_ID}" >"$${SECURITY_DIR}/admin-key.pem"
+  chown root:opensearch "$${SECURITY_DIR}"/*.pem
+  chmod 0640 "$${SECURITY_DIR}/ca.pem" "$${SECURITY_DIR}/node.pem" "$${SECURITY_DIR}/node-key.pem" "$${SECURITY_DIR}/admin.pem"
+  chmod 0600 "$${SECURITY_DIR}/admin-key.pem"
+  rm -f \
+    /etc/opensearch/esnode.pem \
+    /etc/opensearch/esnode-key.pem \
+    /etc/opensearch/kirk.pem \
+    /etc/opensearch/kirk-key.pem \
+    /etc/opensearch/root-ca.pem \
+    /etc/opensearch/spock.pem \
+    /etc/opensearch/spock-key.pem
+
+  local app_password operator_password breakglass_password
+  local app_hash operator_hash breakglass_hash
+  app_password="$(secret_payload "$${APP_PASSWORD_SECRET_ID}")"
+  operator_password="$(secret_payload "$${OPERATOR_PASSWORD_SECRET_ID}")"
+  breakglass_password="$(secret_payload "$${BREAKGLASS_PASSWORD_SECRET_ID}")"
+  app_hash="$(hash_password "$${app_password}")"
+  operator_hash="$(hash_password "$${operator_password}")"
+  breakglass_hash="$(hash_password "$${breakglass_password}")"
+
+  install -d -m 0700 /root/opensearch
+  printf '%s' "$${operator_password}" >/root/opensearch/operator-password
+  chmod 0600 /root/opensearch/operator-password
+
+  cat >"$${SECURITY_CONFIG_DIR}/config.yml" <<'EOF_CONFIG'
+_meta:
+  type: "config"
+  config_version: 2
+config:
+  dynamic:
+    http:
+      anonymous_auth_enabled: false
+    authc:
+      basic_internal_auth_domain:
+        description: "HTTP basic auth against reviewed internal users"
+        http_enabled: true
+        transport_enabled: true
+        order: 0
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: intern
+EOF_CONFIG
+
+  cat >"$${SECURITY_CONFIG_DIR}/internal_users.yml" <<EOF_USERS
+_meta:
+  type: "internalusers"
+  config_version: 2
+magento_app:
+  hash: "$${app_hash}"
+  reserved: false
+  backend_roles:
+    - "magento_app"
+  description: "Magento runtime user limited to Magento-owned OpenSearch indices."
+magento_operator:
+  hash: "$${operator_hash}"
+  reserved: false
+  backend_roles:
+    - "magento_operator"
+  description: "Auditable operator user for health checks and snapshot repository management."
+magento_breakglass:
+  hash: "$${breakglass_hash}"
+  reserved: false
+  backend_roles:
+    - "magento_breakglass"
+  description: "Emergency administrative user; rotate immediately after use."
+EOF_USERS
+
+  cat >"$${SECURITY_CONFIG_DIR}/roles.yml" <<EOF_ROLES
+_meta:
+  type: "roles"
+  config_version: 2
+magento_index_owner:
+  reserved: false
+  cluster_permissions:
+    - "cluster_composite_ops"
+    - "cluster_monitor"
+  index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "indices:admin/aliases/get"
+    - index_patterns:
+        - "$${MAGENTO_INDEX_PREFIX}*"
+      allowed_actions:
+        - "crud"
+        - "create_index"
+        - "manage"
+        - "indices_monitor"
+magento_operator:
+  reserved: false
+  cluster_permissions:
+    - "cluster_monitor"
+    - "cluster:admin/repository/*"
+    - "cluster:admin/snapshot/*"
+  index_permissions:
+    - index_patterns:
+        - "$${MAGENTO_INDEX_PREFIX}*"
+      allowed_actions:
+        - "indices_monitor"
+magento_breakglass:
+  reserved: false
+  cluster_permissions:
+    - "*"
+  index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "*"
+EOF_ROLES
+
+  cat >"$${SECURITY_CONFIG_DIR}/roles_mapping.yml" <<'EOF_MAPPING'
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+magento_index_owner:
+  reserved: false
+  backend_roles:
+    - "magento_app"
+magento_operator:
+  reserved: false
+  backend_roles:
+    - "magento_operator"
+magento_breakglass:
+  reserved: false
+  backend_roles:
+    - "magento_breakglass"
+EOF_MAPPING
+
+  cat >"$${SECURITY_CONFIG_DIR}/tenants.yml" <<'EOF_TENANTS'
+_meta:
+  type: "tenants"
+  config_version: 2
+EOF_TENANTS
+
+  cat >"$${SECURITY_CONFIG_DIR}/nodes_dn.yml" <<EOF_NODES_DN
+_meta:
+  type: "nodesdn"
+  config_version: 2
+cluster1:
+  nodes_dn:
+    - "$${NODE_DN}"
+EOF_NODES_DN
+
+  chown -R root:opensearch "$${SECURITY_CONFIG_DIR}"
+  chmod 0640 "$${SECURITY_CONFIG_DIR}"/*.yml
+
+  printf 'changeit\n' \
+    | OPENSEARCH_PATH_CONF=/etc/opensearch \
+      /usr/share/opensearch/bin/opensearch-keystore add --stdin --force gcs.client.default.truststore.password
+  chown root:opensearch /etc/opensearch/opensearch.keystore
+  chmod 0660 /etc/opensearch/opensearch.keystore
 }
 
 write_snapshot_registration_helper() {
@@ -187,14 +424,21 @@ write_snapshot_registration_helper() {
 #!/usr/bin/env bash
 set -euo pipefail
 
+OPERATOR_PASSWORD_FILE='/root/opensearch/operator-password'
 ADMIN_PASSWORD_FILE='/root/opensearch/initial-admin-password'
-if [[ ! -s "$ADMIN_PASSWORD_FILE" ]]; then
-  echo "Missing $ADMIN_PASSWORD_FILE" >&2
+if [[ -s "$OPERATOR_PASSWORD_FILE" ]]; then
+  SNAPSHOT_USER='magento_operator'
+  SNAPSHOT_PASSWORD="$(cat "$OPERATOR_PASSWORD_FILE")"
+elif [[ -s "$ADMIN_PASSWORD_FILE" ]]; then
+  SNAPSHOT_USER='admin'
+  SNAPSHOT_PASSWORD="$(cat "$ADMIN_PASSWORD_FILE")"
+else
+  echo "Missing OpenSearch snapshot registration credentials" >&2
   exit 1
 fi
 
 curl --fail --silent --show-error --insecure \
-  -u "admin:$(cat "$ADMIN_PASSWORD_FILE")" \
+  -u "$SNAPSHOT_USER:$SNAPSHOT_PASSWORD" \
   -X PUT 'https://localhost:9200/_snapshot/gcs-magento' \
   -H 'Content-Type: application/json' \
   -d @- <<JSON
@@ -218,6 +462,30 @@ start_service() {
   systemctl restart opensearch
 }
 
+apply_security_config() {
+  if [[ "$${SECURITY_HARDENING_ENABLED}" != "true" ]]; then
+    return
+  fi
+
+  for _ in $(seq 1 60); do
+    if curl --fail --silent --show-error --insecure \
+      --cert "$${SECURITY_DIR}/admin.pem" \
+      --key "$${SECURITY_DIR}/admin-key.pem" \
+      "https://localhost:9200" >/dev/null 2>&1; then
+      break
+    fi
+    sleep 5
+  done
+
+  OPENSEARCH_JAVA_HOME=/usr/share/opensearch/jdk \
+    /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
+    -cd "$${SECURITY_CONFIG_DIR}" \
+    -cacert "$${SECURITY_DIR}/ca.pem" \
+    -cert "$${SECURITY_DIR}/admin.pem" \
+    -key "$${SECURITY_DIR}/admin-key.pem" \
+    -icl -nhnv
+}
+
 main() {
   log "starting OpenSearch bootstrap for $${CLUSTER_NAME}"
   install_prerequisites
@@ -227,9 +495,11 @@ main() {
   install_plugins
   mount_data_disk
   write_jvm_options
+  write_security_files
   write_opensearch_config
   write_snapshot_registration_helper
   start_service
+  apply_security_config
   log "OpenSearch bootstrap complete for $${CLUSTER_NAME}"
 }
 

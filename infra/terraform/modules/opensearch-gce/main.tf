@@ -37,6 +37,7 @@ resource "google_compute_instance" "node" {
   network_interface {
     network    = var.network
     subnetwork = var.subnetwork
+    network_ip = length(var.node_private_ips) > 0 ? var.node_private_ips[count.index] : null
   }
 
   service_account {
@@ -51,15 +52,27 @@ resource "google_compute_instance" "node" {
   }
 
   metadata_startup_script = templatefile("${path.module}/startup.sh.tftpl", {
-    cluster_name             = var.name
-    node_count               = var.node_count
-    node_names_json          = jsonencode(local.node_names)
-    opensearch_version       = var.opensearch_version
-    heap_size                = var.heap_size
-    project_id               = var.project_id
-    admin_password_secret_id = var.admin_password_secret_id
-    snapshot_bucket_name     = var.snapshot_bucket_name
-    snapshot_base_path       = var.snapshot_base_path
+    cluster_name                  = var.name
+    node_count                    = var.node_count
+    node_names_json               = jsonencode(local.node_names)
+    opensearch_version            = var.opensearch_version
+    heap_size                     = var.heap_size
+    project_id                    = var.project_id
+    admin_password_secret_id      = var.admin_password_secret_id
+    security_hardening_enabled    = var.security_hardening_enabled
+    tls_ca_cert_secret_id         = var.tls_ca_cert_secret_id
+    tls_node_cert_secret_id       = var.tls_node_cert_secret_id
+    tls_node_key_secret_id        = var.tls_node_key_secret_id
+    tls_admin_cert_secret_id      = var.tls_admin_cert_secret_id
+    tls_admin_key_secret_id       = var.tls_admin_key_secret_id
+    admin_distinguished_name      = var.admin_distinguished_name
+    node_distinguished_name       = var.node_distinguished_name
+    app_password_secret_id        = var.app_password_secret_id
+    operator_password_secret_id   = var.operator_password_secret_id
+    breakglass_password_secret_id = var.breakglass_password_secret_id
+    magento_index_prefix          = var.magento_index_prefix
+    snapshot_bucket_name          = var.snapshot_bucket_name
+    snapshot_base_path            = var.snapshot_base_path
   })
 }
 
