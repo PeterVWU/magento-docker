@@ -169,9 +169,9 @@ var/import/production-derived/ecom78-media/source-media-paths.tsv
 var/import/production-derived/ecom78-media/source-media-path-summary.tsv
 ```
 
-The committed SQL reference lives in
-[source-media-paths.sql](source-media-paths.sql). The TSV uses this column
-shape:
+The maintained export query lives in
+[`scripts/ecom78/export-source-media-paths`](../../scripts/ecom78/export-source-media-paths).
+The TSV uses this column shape:
 
 ```text
 media_family	entity_kind	entity_key	media_path	raw_value
