@@ -202,11 +202,11 @@ Notes:
 | Magento filesystem operations | Magento writes, reads, deletes, copies, renames, streams, stats files, and creates directories through `DirectoryList::MEDIA` with the configured remote driver. | `scripts/dev/ecom60-media-smoke` output and matching object observation. |
 | Admin WYSIWYG/media upload | File created in GCS and visible from admin after cache clean. | Screenshot or command notes with object path. |
 | Product image upload | Product image renders in admin and frontend. | Product image was uploaded, observed in `vwu-magento-media`, and confirmed visible on frontend product page. |
-| Product import media | CSV import can consume staged import media and create product media records. | Import command, CSV sample path, resulting object paths. |
-| Media deletion | Admin/product media deletion removes or makes the object unreachable as expected. | Before/after object listing and Magento behavior. |
+| Product import media | CSV import can consume staged import media and create product media records. | ECOM-71 staging procedure: [product-import-media-validation.md](../ecom-71/product-import-media-validation.md). |
+| Media deletion | Admin/product media deletion removes or makes the object unreachable as expected. | ECOM-72 staging procedure: [media-deletion-validation.md](../ecom-72/media-deletion-validation.md). |
 | Image resize/cache | Magento-generated resized media is written to remote media or generated deterministically. | Product frontend image renders; category Media Gallery insertion uses `.renditions/...`; Manage Gallery grid thumbnail renders via rendition URL override. |
-| Stateless web instances | Instance B can read media uploaded by instance A without shared disk. | Two-container or two-VM test notes. |
-| CDN/edge invalidation | Updated media can be purged or versioned without stale frontend delivery. | CDN config and purge/update notes. |
+| Stateless web instances | Instance B can read media uploaded by instance A without shared disk. | ECOM-73 staging procedure: [stateless-media-read-validation.md](../ecom-73/stateless-media-read-validation.md). |
+| CDN/edge invalidation | Updated media can be purged or versioned without stale frontend delivery. | ECOM-74 staging procedure: [cdn-origin-observability-validation.md](../ecom-74/cdn-origin-observability-validation.md). |
 | Failure handling | Read/write/auth/rate-limit failures have observable logs and an operator response. | Runbook section completed. |
 
 ## First Local Gate
